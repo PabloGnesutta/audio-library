@@ -1,0 +1,3 @@
+file uploader no se puede cerrar/reiniciar cuando falla un uploader, probar desde cero
+
+desktop abierta por default si existe y no hay otra

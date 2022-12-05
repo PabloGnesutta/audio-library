@@ -1,27 +1,58 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import store from '@/store';
+import eventBus from '@/plugins/event-bus';
+import AuthController from '@/controller/auth-controller';
+import ErrorMixin from '@/plugins/error-mixin';
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    name: 'Home',
+    component: () => import(/* webpackChunkName: "Home" */ '../views/Home.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
+
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: function () {
-      return import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-    }
-  }
-]
+    path: '/login',
+    name: 'Login',
+    component: () =>
+      import(/* webpackChunkName: "Login" */ '../views/auth/Login.vue'),
+  },
+
+  {
+    path: '/verify-email/:token',
+    name: 'VerifyEmail',
+    component: () =>
+      import(
+        /* webpackChunkName: "VerifyEmail" */ '../views/auth/VerifyEmail.vue'
+      ),
+  },
+];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  history: createWebHistory('audio-library'), //BASE_URL
+  routes,
+});
 
-export default router
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuth) {
+    try {
+      const { data } = await AuthController.verifySession();
+      const { user, folders, files } = data;
+      store.commit('auth/setUser', user);
+      store.commit('tree/refreshTree', { folders, files });
+    } catch (_err) {
+      const msg = ErrorMixin.methods._formatError(_err);
+      eventBus.$emit('push_toast', { msg });
+
+      store.commit('auth/doLogout');
+      next({ name: 'Login' });
+    }
+  }
+
+  next();
+});
+
+export default router;
