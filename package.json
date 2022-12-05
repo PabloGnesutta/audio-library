@@ -1,11 +1,12 @@
 {
-  "name": "audio-library",
+  "name": "audiolibrary-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },
+  "author": "Pablo Gnesutta",
   "dependencies": {
     "axios": "^1.2.0",
     "vue": "^3.2.13",

@@ -91,7 +91,7 @@ export default {
       signupPassword: '',
       loginEmail: '',
       loginPassword: '',
-      showLogin: false,
+      showLogin: true,
     };
   },
 
