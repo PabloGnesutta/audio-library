@@ -4,11 +4,16 @@ const port = process.env.PORT || 3000;
 const express = require('express'),
   path = require('path'),
   cors = require('cors'),
+  helmet = require('helmet'),
   app = express(),
   publicPath = path.join(__dirname, '../', '__client-app-build'),
   { connect } = require('mongoose'),
   fileUpload = require('express-fileupload');
 
+// CSP is left off: the audio player streams from an external R2 origin and,
+// in dev, the frontend calls this API cross-origin -- helmet's default CSP
+// would block both. Revisit once the CSP can allowlist the real R2 domain.
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 app.use(express.static(publicPath));
 app.use(fileUpload());
