@@ -7,7 +7,8 @@
   },
   "scripts": {
     "start": "node ./src/index.audio-library.js",
-    "serve": "nodemon ./src/index.audio-library.js"
+    "serve": "nodemon ./src/index.audio-library.js",
+    "test": "jest"
   },
   "author": "Pablo Gnesutta",
   "license": "ISC",
@@ -28,6 +29,7 @@
     "mongoose": "^9.9.4"
   },
   "devDependencies": {
+    "jest": "^30.5.0",
     "nodemon": "^3.1.14"
   }
 }
