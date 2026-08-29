@@ -2,7 +2,7 @@ const EmailFactory = require('../factory/EmailFactory');
 const sendgridMail = require('@sendgrid/mail');
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-sendMail = function ({ to, subject, html }) {
+const sendMail = function ({ to, subject, html }) {
   const correctHtml = EmailFactory.generate(html, subject);
   const msg = {
     from: process.env.SENDGRID_SENDER,
@@ -12,12 +12,12 @@ sendMail = function ({ to, subject, html }) {
     html: correctHtml,
   };
 
-  sendgridMail.send(msg)
+  return sendgridMail.send(msg)
     .then(() => { console.log('  - Email sent to', to); })
-    .catch(_err => { throw _err; });
+    .catch(_err => { console.error('  ! Error sending email to', to, _err); });
 };
 
-sendVerifyEmailMail = function ({ to, token }) {
+const sendVerifyEmailMail = function ({ to, token }) {
   const link = `${process.env.FRONTEND_URL}/verify-email/${token}`;
   const html = `
     <h1>Thanks for signin up to AudioLibrary!</h1>
@@ -26,7 +26,7 @@ sendVerifyEmailMail = function ({ to, token }) {
     <p>Or copy this into your browser:</p>
     <p>${link}</p>
   `;
-  sendMail({ to, html, subject: 'AudioLibrary | Verify your email address' });
+  return sendMail({ to, html, subject: 'AudioLibrary | Verify your email address' });
 };
 
 module.exports = {
