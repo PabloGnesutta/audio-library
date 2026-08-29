@@ -7,8 +7,9 @@
       </div>
 
       <form>
-        <label for="email">Email</label>
+        <label for="login-email">Email</label>
         <input
+          id="login-email"
           ref="loginEmail"
           v-model="loginEmail"
           :disabled="loading"
@@ -16,8 +17,9 @@
           name="email"
           placeholder="example@mail.com"
         />
-        <label for="password">Password</label>
+        <label for="login-password">Password</label>
         <input
+          id="login-password"
           ref="loginPassword"
           v-model="loginPassword"
           :disabled="loading"
@@ -43,8 +45,9 @@
         <h4 class="placeholder select-none">Create a new account</h4>
       </div>
       <form>
-        <label for="email">Email</label>
+        <label for="signup-email">Email</label>
         <input
+          id="signup-email"
           ref="signupEmail"
           v-model="signupEmail"
           :disabled="loading"
@@ -52,8 +55,9 @@
           name="email"
           placeholder="example@mail.com"
         />
-        <label for="password">Password</label>
+        <label for="signup-password">Password</label>
         <input
+          id="signup-password"
           ref="signupPassword"
           v-model="signupPassword"
           :disabled="loading"
