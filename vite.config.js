@@ -26,4 +26,7 @@ export default defineConfig({
     outDir: '../audiolibrary-backend/__client-app-build',
     emptyOutDir: true,
   },
+  test: {
+    environment: 'jsdom',
+  },
 });

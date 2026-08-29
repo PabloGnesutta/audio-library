@@ -17,49 +17,48 @@ transport.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-transport.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status = error.response?.status;
+export function handleResponseError(error) {
+  const status = error.response?.status;
 
-    if (status != 401) {
-      // forward all not-401 errors (including network/CORS/timeout errors with no response)
-      return Promise.reject(error);
-    }
-
-    // 401 token expired, RETRY
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (refreshToken) {
-      const config = {
-        headers: {
-          Authorization: 'Bearer ' + refreshToken,
-        },
-      };
-
-      const originalRequest = error.config;
-      return axios
-        .post(Config.BACKEND_API_URL + '/refresh-access-token', null, config)
-        .then((response) => {
-          const newAccessToken = response.data;
-          refreshAccessToken(newAccessToken);
-          return resendRequest(originalRequest, newAccessToken);
-        })
-        .then((response) => {
-          console.log('Request retry OK!');
-          return Promise.resolve(response);
-        })
-        .catch((_err) => {
-          // login again
-          console.warn('Request retry failed', _err);
-          handleTokenError();
-          return Promise.reject(error);
-        });
-    } else {
-      handleTokenError();
-      return Promise.reject(error);
-    }
+  if (status != 401) {
+    // forward all not-401 errors (including network/CORS/timeout errors with no response)
+    return Promise.reject(error);
   }
-);
+
+  // 401 token expired, RETRY
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (refreshToken) {
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + refreshToken,
+      },
+    };
+
+    const originalRequest = error.config;
+    return axios
+      .post(Config.BACKEND_API_URL + '/refresh-access-token', null, config)
+      .then((response) => {
+        const newAccessToken = response.data;
+        refreshAccessToken(newAccessToken);
+        return resendRequest(originalRequest, newAccessToken);
+      })
+      .then((response) => {
+        console.log('Request retry OK!');
+        return Promise.resolve(response);
+      })
+      .catch((_err) => {
+        // login again
+        console.warn('Request retry failed', _err);
+        handleTokenError();
+        return Promise.reject(error);
+      });
+  } else {
+    handleTokenError();
+    return Promise.reject(error);
+  }
+}
+
+transport.interceptors.response.use((response) => response, handleResponseError);
 
 function handleTokenError() {
   store.commit('auth/doLogout');

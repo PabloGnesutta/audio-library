@@ -75,3 +75,24 @@ that needed to change and why, for whoever touches build config next:
   backend share a host (as in this dev setup), but would misresolve the
   API URL in a real multi-host deployment. Add a `.env.production` with
   `VUE_APP_ENV=production` to fix, whenever that's needed.
+
+## Test coverage (Vitest, added 2026-08-29)
+
+`npm test` runs Vitest (`jsdom` environment, config lives in the `test`
+key of `vite.config.js` — same file Vite itself uses). Covers pure
+logic (`helpers/`, `plugins/error-mixin.js`, the Vuex mutations in
+`store/modules/`) plus a regression suite for `controller/
+base-controller.js`'s axios response-error handling — the exact bugs
+fixed earlier in this modernization pass (unconditional
+`error.response.status` throwing on network failures; a failed token
+refresh resolving instead of rejecting). That handler was pulled out
+into a named export (`handleResponseError`) specifically so it could
+be unit-tested directly rather than reaching into axios interceptor
+internals — pure refactor, no behavior change. Sanity-checked the same
+way as the backend suite: reverted a fix, confirmed the matching test
+fails with the exact original bug's error, restored it.
+
+Not covered: `.vue` component rendering/interaction (no `@vue/
+test-utils` `mount()`-based tests yet, though the package is
+installed) — this pass focused on business logic over UI, matching how
+the backend suite was scoped.
