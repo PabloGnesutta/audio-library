@@ -36,7 +36,7 @@ class HelperFunctions {
   }
 }
 
-module.exports = HelperFunctions;
+export default HelperFunctions;
 
 // module.exports = {
 //   toHHMMSSCompute: (number) => {

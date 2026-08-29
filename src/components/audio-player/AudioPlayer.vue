@@ -702,7 +702,7 @@ $progressBarClickableHeight: 30px;
   width: 100%;
   height: 100%;
   height: $progressBarClickableHeight;
-  transform: translateY(-$progressBarClickableHeight / 2);
+  transform: translateY(calc(-1 * $progressBarClickableHeight / 2));
   box-shadow: 0 0 24px 3px #00000021;
   cursor: pointer;
 }

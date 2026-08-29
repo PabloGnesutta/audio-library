@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import(/* webpackChunkName: "Home" */ '../views/Home.vue'),
+    component: () => import('../views/Home.vue'),
     meta: {
       requiresAuth: true,
     },
@@ -17,17 +17,13 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () =>
-      import(/* webpackChunkName: "Login" */ '../views/auth/Login.vue'),
+    component: () => import('../views/auth/Login.vue'),
   },
 
   {
     path: '/verify-email/:token',
     name: 'VerifyEmail',
-    component: () =>
-      import(
-        /* webpackChunkName: "VerifyEmail" */ '../views/auth/VerifyEmail.vue'
-      ),
+    component: () => import('../views/auth/VerifyEmail.vue'),
   },
 ];
 

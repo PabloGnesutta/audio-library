@@ -1,10 +1,10 @@
 var url =
-  process.env.VUE_APP_ENV === 'production'
+  import.meta.env.VUE_APP_ENV === 'production'
     ? ''
-    : `http://localhost:${process.env.VUE_APP_LOCAL_BACKEND_PORT}`;
+    : `http://localhost:${import.meta.env.VUE_APP_LOCAL_BACKEND_PORT}`;
 
 url += '/api';
 
-module.exports = {
+export default {
   BACKEND_API_URL: url,
 };

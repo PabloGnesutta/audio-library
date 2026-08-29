@@ -1,7 +1,6 @@
 import axios from 'axios';
 import store from '@/store';
-
-const Config = require('../config');
+import Config from '../config';
 
 const BASE_URL = Config.BACKEND_API_URL;
 

@@ -1,5 +1,5 @@
-const axios = require('axios');
-const Config = require('../config');
+import axios from 'axios';
+import Config from '../config';
 import BaseController from "@/controller/base-controller";
 
 class FileController extends BaseController {
