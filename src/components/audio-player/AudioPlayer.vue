@@ -210,7 +210,7 @@ export default {
     ...mapGetters(["pageFirstInteraction", "avoidKeyListeners"]),
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener("keyup", this.onKeyUp);
   },
 

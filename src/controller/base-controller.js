@@ -21,10 +21,10 @@ transport.interceptors.request.use(
 transport.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error.response.status;
+    const status = error.response?.status;
 
     if (status != 401) {
-      // forward all not-401 errors
+      // forward all not-401 errors (including network/CORS/timeout errors with no response)
       return Promise.reject(error);
     }
 
@@ -53,15 +53,16 @@ transport.interceptors.response.use(
           // login again
           console.warn('Request retry failed', _err);
           handleTokenError();
+          return Promise.reject(error);
         });
     } else {
       handleTokenError();
+      return Promise.reject(error);
     }
   }
 );
 
 function handleTokenError() {
-  store.commit('auth/doLogout');
   store.commit('auth/doLogout');
   console.log('handleTokenError');
   localStorage.removeItem('accessToken');

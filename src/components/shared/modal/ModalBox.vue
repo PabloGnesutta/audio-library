@@ -33,7 +33,7 @@ export default {
     document.addEventListener('keyup', this.handleEscape);
     console.log(this.maxWidth);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener('keyup', this.handleEscape);
   },
   methods: {

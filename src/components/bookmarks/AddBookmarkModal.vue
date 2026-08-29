@@ -69,7 +69,7 @@ export default {
         });
         this.$emit('bookmarkAdded', data);
       } catch (_err) {
-        this.toastError(e);
+        this.toastError(_err);
       }
 
       this.closeModal();
