@@ -48,7 +48,7 @@ router.beforeEach(async (to, from, next) => {
       eventBus.$emit('push_toast', { msg });
 
       store.commit('auth/doLogout');
-      next({ name: 'Login' });
+      return next({ name: 'Login' });
     }
   }
 

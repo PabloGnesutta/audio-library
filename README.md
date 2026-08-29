@@ -1,8 +1,11 @@
 # audiolibrary frontend
 
-node version: v16.17.0
+Node: developed/tested on v24 (nvm: `nvm use` picks up `.nvmrc`). Any
+Node >= 20 should work.
 
 ## Project setup
+
+Copy `.env.example` to `.env` and fill in real values before running.
 
 ```
 npm install
