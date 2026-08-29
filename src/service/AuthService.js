@@ -8,8 +8,6 @@ const config = require('../config');
 const accessTokenExp = config.accessTokenExpiration;
 const refreshTokenExp = config.refreshTokenExpiration;
 
-const bcrypt = require('bcryptjs');
-
 class AuthService {
   static async signUp(userData) {
     try {
@@ -46,8 +44,6 @@ class AuthService {
 
   static async login(loginData) {
     try {
-      const hashedPassword = await bcrypt.hash('qwe', 12);
-      // console.log(hashedPassword)
       const user = await UserHelper.getUserByEmail(loginData.email, {
         emailVerified: true,
       });

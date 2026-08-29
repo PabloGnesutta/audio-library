@@ -1,5 +1,5 @@
 exports.get404 = (req, res, next) => {
-    res.json({ message: 'Page not found' });
+    res.status(404).json({ message: 'Page not found' });
 };
 
 exports.erorHandler = (error, req, res, next) => {

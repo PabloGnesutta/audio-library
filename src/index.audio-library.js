@@ -15,6 +15,7 @@ app.use(fileUpload());
 app.use(express.json());
 
 const { authorizationMiddleware } = require('./controllers/auth-controller');
+const { get404 } = require('./controllers/error-controller');
 const authRoutes = require('./routes/auth-routes');
 const fileRoutes = require('./routes/file-routes');
 const userRoutes = require('./routes/user-routes');
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', authorizationMiddleware, userRoutes);
 app.use('/api/file', authorizationMiddleware, fileRoutes);
 app.use('/api/bookmark', authorizationMiddleware, bookmarkRoutes);
+app.use('/api', get404);
 
 //SPA
 app.use('/', (req, res) => {
