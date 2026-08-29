@@ -54,7 +54,7 @@ class FileService {
 
     try {
       await S3Helper.deleteFile({ Key: file.key });
-      await file.delete();
+      await file.deleteOne();
 
       if (user.lastFileSeen == _id) {
         user.lastFileSeen = null;
@@ -72,7 +72,7 @@ class FileService {
       try {
         console.log(' * deleting file', file.name, file.id);
         await S3Helper.deleteFile({ Key: file.key });
-        await file.delete();
+        await file.deleteOne();
         if (user.lastFileSeen == file._id.toString()) {
           user.lastFileSeen = null;
           await user.save();

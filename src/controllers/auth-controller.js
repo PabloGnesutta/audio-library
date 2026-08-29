@@ -60,7 +60,7 @@ exports.authorizationMiddleware =
         next();
       })
       .catch(_err => {
-        res.status(error.status).json(error.msg);
+        res.status(_err.status).json(_err.message);
       });
   };
 
@@ -102,6 +102,6 @@ exports.refreshAccessToken =
         return res.json(newAccessToken);
       })
       .catch(_err => {
-        res.status(error.status).json(error.msg);
+        res.status(_err.status).json(_err.message);
       });
   };

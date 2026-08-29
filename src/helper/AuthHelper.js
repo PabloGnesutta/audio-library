@@ -28,19 +28,21 @@ class AuthHelper {
 
   static createAccessToken(data, expiration) {
     return jwt.sign({ data }, process.env.SECRET_KEY, {
+      algorithm: 'HS256',
       expiresIn: expiration,
     });
   }
 
   static createRefreshToken(userId, expiration) {
     return jwt.sign({ userId }, process.env.SECRET_KEY, {
+      algorithm: 'HS256',
       expiresIn: expiration,
     });
   }
 
   static validateToken(token) {
     return new Promise((resolve, reject) => {
-      jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+      jwt.verify(token, process.env.SECRET_KEY, { algorithms: ['HS256'] }, (err, decoded) => {
         if (!err) resolve(decoded);
 
         if (err.message == 'jwt expired') {

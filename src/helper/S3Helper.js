@@ -1,57 +1,40 @@
-const AWS = require('aws-sdk');
+const { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { Upload } = require('@aws-sdk/lib-storage');
 
 // esta instanciacion podria estar encapsulada en un StorageFactory para abstraernos del provedor
-const s3Endpoint = new AWS.Endpoint(
-  `${process.env.S3_REGION}.digitaloceanspaces.com`
-);
 const audioLibraryBucket = process.env.S3_SPACE_NAME;
-const s3 = new AWS.S3({
-  endpoint: s3Endpoint,
-  accessKeyId: process.env.S3_KEY,
-  secretAccessKey: process.env.S3_SECRET,
+const s3 = new S3Client({
+  endpoint: `https://${process.env.S3_REGION}.digitaloceanspaces.com`,
   region: process.env.S3_REGION,
-  signatureVersion: 'v4',
+  credentials: {
+    accessKeyId: process.env.S3_KEY,
+    secretAccessKey: process.env.S3_SECRET,
+  },
 });
+
+const COMMANDS = {
+  getObject: GetObjectCommand,
+};
 
 class AmazonS3Helper {
   static uploadDataToBucket(params) {
     params.Bucket = audioLibraryBucket;
-    return new Promise((resolve, reject) => {
-      s3.upload(params, (error, data) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    const upload = new Upload({ client: s3, params });
+    return upload.done();
   }
 
   static deleteFile(params) {
     params.Bucket = audioLibraryBucket;
-    return new Promise((resolve, reject) => {
-      s3.deleteObject(params, (error, data) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    return s3.send(new DeleteObjectCommand(params));
   }
 
   static getSignedUrl(type, params) {
     params.Bucket = audioLibraryBucket;
-    return new Promise((resolve, reject) => {
-      s3.getSignedUrl(type, params, (error, data) => {
-        if (error) {
-          reject(error);
-        } else {
-          console.log('signedurl data', data);
-          resolve(data);
-        }
-      });
-    });
+    const Command = COMMANDS[type];
+    if (!Command) return Promise.reject(new Error(`Unsupported S3 signed url type: ${type}`));
+    const { Expires, ...commandParams } = params;
+    return getSignedUrl(s3, new Command(commandParams), { expiresIn: Expires });
   }
 }
 

@@ -36,7 +36,7 @@ exports.updateBookmark = async (req, res, next) => {
   try {
     const bookmark = await BookmarkService.updateBookmark(req.user, req.params._id, req.body);
     res.json({ bookmark });
-  } catch (err) {
+  } catch (_err) {
     next(ErrorFactory.create(_err, 'Error while updating bookmark'));
   }
 };

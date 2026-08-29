@@ -18,7 +18,7 @@ const FileSchema = new Schema({
   lastInteraction: Date
 });
 
-FileSchema.post('remove', function (doc, next) {
+FileSchema.post('deleteOne', { document: true, query: false }, function (doc, next) {
   this.model('Bookmark').deleteMany({ owner: doc.owner, file: doc._id }, next);
 });
 
