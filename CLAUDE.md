@@ -67,14 +67,16 @@ that needed to change and why, for whoever touches build config next:
   `AudioPlayer.vue`'s `<style>` (a newer Dart Sass than the codebase
   had been built with before) — fixed by wrapping the division in
   `calc()`.
-- **Known pre-existing gap, not introduced by this migration**: there's
-  no `.env.production`, so a production build still bakes in whatever
-  `VUE_APP_ENV`/`VUE_APP_LOCAL_BACKEND_PORT` are set to in the base
-  `.env` file rather than switching to the relative `/api` path
-  `src/config.js` intends for production. Harmless when frontend and
-  backend share a host (as in this dev setup), but would misresolve the
-  API URL in a real multi-host deployment. Add a `.env.production` with
-  `VUE_APP_ENV=production` to fix, whenever that's needed.
+- **`.env.production`** (added 2026-08-29, closing a gap this migration
+  originally left open) sets `VUE_APP_ENV=production` so `vite build`
+  picks it up automatically (Vite loads `.env.production` for build
+  mode, `.env` for dev) and `src/config.js` switches to the relative
+  `/api` path instead of baking in `http://localhost:${VUE_APP_LOCAL_BACKEND_PORT}`.
+  Without it, a production build would still resolve the dev-mode URL —
+  harmless when frontend and backend share a host, but wrong in a real
+  multi-host deployment. Verified by grepping the built bundle for
+  `3004`/`localhost` (absent) and `/api` (present), then serving it
+  through the backend and checking it in a real browser.
 
 ## Test coverage (Vitest, added 2026-08-29)
 
