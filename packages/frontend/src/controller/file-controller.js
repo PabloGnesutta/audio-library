@@ -2,9 +2,14 @@ import axios from 'axios';
 import Config from '../config';
 import BaseController from "@/controller/base-controller";
 
+
 class FileController extends BaseController {
   static getUrl(fileId, folderId) {
     return this.post(`/file/${fileId}/url`, { folderId });
+  }
+
+  static getFilesForFolder(folderId) {
+    return this.get(`/file/folder/${folderId}`);
   }
 
   static uploadFile(file, config, folderId, duration) {

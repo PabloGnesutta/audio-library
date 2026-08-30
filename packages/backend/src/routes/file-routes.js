@@ -3,6 +3,7 @@ const router = express.Router();
 const fileController = require('../controllers/file-controller');
 
 router.post('/:_id/url', fileController.getFileUrl);
+router.get('/folder/:folderId', fileController.getFilesForFolder);
 router.post('/', fileController.postFile);
 router.put('/', fileController.updateFile); //should be /:id
 

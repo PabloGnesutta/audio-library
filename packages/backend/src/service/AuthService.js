@@ -57,7 +57,7 @@ class AuthService {
       console.log(' -success]');
       const accessToken = this.createAccessToken(user, accessTokenExp);
       const refreshToken = this.createRefreshToken(user, refreshTokenExp);
-      const clientData = await UserHelper.clientData(user, {
+      const clientData = UserHelper.sessionData(user, {
         accessToken,
         refreshToken,
       });

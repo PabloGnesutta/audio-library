@@ -78,7 +78,7 @@ exports.verifySession =
       const user = await UserHelper.getUserById(decoded.data.userId);
       if (!user) return res.status(403).json("Permission denied");
 
-      const clientData = await UserHelper.clientData(user);
+      const clientData = UserHelper.sessionData(user);
       res.json(clientData);
     } catch (_err) {
       next(_err);

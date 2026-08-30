@@ -24,6 +24,28 @@ class UserHelper {
     return data;
   }
 
+  // Like clientData, but without the user's files -- used when bootstrapping
+  // a session (login/verifySession) so folders can be shown immediately and
+  // each folder's files are fetched lazily as it's opened.
+  static sessionData(user, extraParams) {
+    const data = {
+      user: {
+        email: user.email,
+        name: user.name,
+        lastFileSeen: user.lastFileSeen,
+        lastFolderSeen: user.lastFolderSeen
+      },
+      folders: user.folders,
+    };
+    if (extraParams) {
+      for (const key in extraParams) {
+        data[key] = extraParams[key];
+      }
+    }
+
+    return data;
+  }
+
   static saveUser(user) {
     return user.save();
   }

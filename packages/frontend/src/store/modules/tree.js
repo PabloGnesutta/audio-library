@@ -10,15 +10,26 @@ function refreshTree(state, { folders, files }) {
   state.arbol = [];
   state.folders = folders;
 
-  const sortedFiles = [...files];
-  sortByName(sortedFiles);
+  // `files` is omitted when bootstrapping a session -- folders are shown
+  // right away and each one's files are fetched lazily as it's opened
+  // (see `setFolderFiles`). When `files` is provided (e.g. after moving a
+  // file or editing its tags) every folder is populated up front, same as
+  // before.
+  if (files) {
+    const sortedFiles = [...files];
+    sortByName(sortedFiles);
 
-  state.folders.forEach((folder) => {
-    const treeFiles = sortedFiles.filter((file) => {
-      return file.folderId == folder.id;
+    state.folders.forEach((folder) => {
+      const treeFiles = sortedFiles.filter((file) => {
+        return file.folderId == folder.id;
+      });
+      state.arbol.push({ folder, files: treeFiles, loaded: true });
     });
-    state.arbol.push({ folder, files: treeFiles });
-  });
+  } else {
+    state.folders.forEach((folder) => {
+      state.arbol.push({ folder, files: [], loaded: false });
+    });
+  }
   state.currentFolder = state.folders[0];
 }
 
@@ -54,7 +65,7 @@ export default {
     addFolderToTree: (state, folder) => {
       //todo: insert sorted
       state.folders.push(folder);
-      state.arbol.push({ folder, files: [] });
+      state.arbol.push({ folder, files: [], loaded: true });
     },
     updateFolderInTree: (state, { treeIndex, properties }) => {
       const treeFolder = state.arbol[treeIndex].folder;
@@ -71,6 +82,12 @@ export default {
     addFileToTree: (state, { treeIndex, file }) => {
       state.arbol[treeIndex].files.push(file);
       sortByName(state.arbol[treeIndex].files);
+    },
+    setFolderFiles: (state, { treeIndex, files }) => {
+      const sortedFiles = [...files];
+      sortByName(sortedFiles);
+      state.arbol[treeIndex].files = sortedFiles;
+      state.arbol[treeIndex].loaded = true;
     },
     updateFileCurrentTimeInTree: (state, { treeIndex, fileIndex, currentTime }) => {
       const file = state.arbol[treeIndex].files[fileIndex];

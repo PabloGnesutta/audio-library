@@ -75,11 +75,11 @@ describe('AuthService.login', () => {
     AuthHelper.verifyPassword.mockResolvedValue(true);
     AuthHelper.createAccessToken.mockReturnValue('access-token');
     AuthHelper.createRefreshToken.mockReturnValue('refresh-token');
-    UserHelper.clientData.mockResolvedValue({ user, accessToken: 'access-token', refreshToken: 'refresh-token' });
+    UserHelper.sessionData.mockReturnValue({ user, accessToken: 'access-token', refreshToken: 'refresh-token' });
 
     const result = await AuthService.login({ email: 'user@example.com', password: 'correct' });
 
-    expect(UserHelper.clientData).toHaveBeenCalledWith(
+    expect(UserHelper.sessionData).toHaveBeenCalledWith(
       user,
       { accessToken: 'access-token', refreshToken: 'refresh-token' }
     );

@@ -18,10 +18,20 @@ exports.getFileUrl = async (req, res, next) => {
 exports.postFile = async (req, res, next) => {
   console.log('postFile', req.body.folderId, req.files.file);
   try {
-    const { file, bookmark } = await FileService.uploadFile(req.user, req.files.file, req.body);
-    res.json({ file, bookmark });
+    const { file } = await FileService.uploadFile(req.user, req.files.file, req.body);
+    res.json({ file });
   } catch (_err) {
     next(ErrorFactory.create(_err, 'Error while uploading file'));
+  }
+};
+
+exports.getFilesForFolder = async (req, res, next) => {
+  console.log('getFilesForFolder', req.params.folderId);
+  try {
+    const files = await FileService.getUserFilesByFolderId(req.user, req.params.folderId);
+    res.json({ files });
+  } catch (_err) {
+    next(ErrorFactory.create(_err, 'Error while getting folder files'));
   }
 };
 

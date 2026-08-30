@@ -1,6 +1,12 @@
 import store from '@/store';
 
+
 export default {
+  treeIndexByFolderId(folderId) {
+    const arbol = store.state.tree.arbol;
+    return arbol.findIndex((item) => item.folder.id == folderId);
+  },
+
   indexesByFileId(fileId) {
     const arbol = store.state.tree.arbol;
     for (var a = 0; a < arbol.length; a++) {

@@ -168,7 +168,7 @@ export default {
     };
   },
 
-  props: ['lastFileSeen'],
+  props: ['lastFileSeen', 'lastFolderSeen'],
 
   computed: {
     ...mapGetters({
@@ -191,6 +191,7 @@ export default {
       removeFolderFromTree: 'tree/removeFolderFromTree',
       setFilesTargetFolder: 'fileUpload/setFilesTargetFolder',
       setFilesToUpload: 'fileUpload/setFilesToUpload',
+      setFolderFiles: 'tree/setFolderFiles',
     }),
 
     onFileDragStart(e, originFolder, file) {
@@ -211,7 +212,7 @@ export default {
 
     initialize(initPlaybackAfterParse) {
       if (initPlaybackAfterParse && this.lastFileSeen) {
-        this.openLastFileSeen(this.lastFileSeen);
+        this.openLastFileSeen(this.lastFileSeen, this.lastFolderSeen);
       }
     },
 
@@ -219,11 +220,25 @@ export default {
       this.setCurrentFolder(folder);
     },
 
-    toggleFolder(i) {
+    async loadFolderFiles(treeIndex) {
+      const item = this._tree[treeIndex];
+      if (!item || item.loaded) return;
+      try {
+        const { data } = await FileController.getFilesForFolder(item.folder.id);
+        this.setFolderFiles({ treeIndex, files: data.files });
+      } catch (_err) {
+        this.toastError(_err);
+      }
+    },
+
+    async toggleFolder(i) {
       this.selectFolder(this._tree[i].folder);
       const nuevoEstado =
         this.foldersStatus[i] === 'DESPLEGADA' ? 'PLEGADA' : 'DESPLEGADA';
       this.foldersStatus[i] = nuevoEstado;
+      if (nuevoEstado === 'DESPLEGADA') {
+        await this.loadFolderFiles(i);
+      }
     },
 
     promptAddFolder() {
@@ -313,8 +328,15 @@ export default {
     },
 
     //select file and open containg folder
-    openLastFileSeen(fileId) {
-      const { treeIndex, fileIndex } = TreeHelper.indexesByFileId(fileId);
+    async openLastFileSeen(fileId, folderId) {
+      const treeIndex = TreeHelper.treeIndexByFolderId(folderId);
+      if (treeIndex === -1) return;
+
+      await this.loadFolderFiles(treeIndex);
+
+      const { fileIndex } = TreeHelper.indexesByFileId(fileId);
+      if (fileIndex === -1) return;
+
       this.openFileWithIndexes(treeIndex, fileIndex);
       this.toggleFolder(treeIndex);
     },

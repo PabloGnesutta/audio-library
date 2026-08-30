@@ -33,7 +33,34 @@ describe('tree store mutations', () => {
     mutations.addFolderToTree(state, folder);
 
     expect(state.folders).toEqual([folder]);
-    expect(state.arbol).toEqual([{ folder, files: [] }]);
+    expect(state.arbol).toEqual([{ folder, files: [], loaded: true }]);
+  });
+
+  test('refreshTree marks folders unloaded with empty files when files is omitted', () => {
+    const state = baseState();
+    const folders = [{ id: 0, name: 'Desktop' }, { id: 1, name: 'Archive' }];
+
+    mutations.refreshTree(state, { folders });
+
+    expect(state.arbol).toEqual([
+      { folder: folders[0], files: [], loaded: false },
+      { folder: folders[1], files: [], loaded: false },
+    ]);
+  });
+
+  test('setFolderFiles populates a folder and marks it loaded, sorted by name', () => {
+    const state = {
+      ...baseState(),
+      arbol: [{ folder: { id: 0 }, files: [], loaded: false }],
+    };
+
+    mutations.setFolderFiles(state, {
+      treeIndex: 0,
+      files: [{ name: 'b.mp3' }, { name: 'a.mp3' }],
+    });
+
+    expect(state.arbol[0].loaded).toBe(true);
+    expect(state.arbol[0].files.map((f) => f.name)).toEqual(['a.mp3', 'b.mp3']);
   });
 
   test('removeFolderFromTree removes by tree index', () => {

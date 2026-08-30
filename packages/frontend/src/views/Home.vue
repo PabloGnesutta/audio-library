@@ -7,6 +7,7 @@
             <TreeNavigation
               ref="treeNavigation"
               :lastFileSeen="user.lastFileSeen"
+              :lastFolderSeen="user.lastFolderSeen"
               @fileSelected="onFileSelected"
               @ocultarSidebar="hideSidebar"
             />
