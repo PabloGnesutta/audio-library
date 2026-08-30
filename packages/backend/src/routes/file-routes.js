@@ -9,6 +9,7 @@ router.put('/', fileController.updateFile); //should be /:id
 
 router.delete('/:_id', fileController.deleteFile);
 router.put('/multiple-files', fileController.updateMultipleFiles);
+router.put('/multiple-files/tags', fileController.addTagsToMultipleFiles);
 router.put('/metadata', fileController.updateFileMetadata); //should be /:id
 
 module.exports = router;

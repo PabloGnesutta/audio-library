@@ -68,6 +68,7 @@
               :active="activeFile._id === file._id"
               :is-last-seen="item.folder.lastFileSeen == file._id"
               :status="filesStatus[file._id]"
+              :selected="isFileSelected(file)"
               @openFile="openFileWithIndexes(treeIndex, fileIndex)"
               @openFileMoveMenu="openFileMoveMenu"
               @openFileTagsMenu="openFileTagsMenu"
@@ -87,7 +88,10 @@
       @movingFileFinished="onMovingFileFinished"
       @moveMultipleFilesFinished="moveMultipleFilesFinished"
     />
-    <TagsModal ref="tagsModal" />
+    <TagsModal
+      ref="tagsModal"
+      @tagsAppliedToMultipleFiles="onTagsAppliedToMultipleFiles"
+    />
 
     <!-- multiple-file actions -->
     <div
@@ -100,6 +104,12 @@
         >
       </div>
       <div class="right flex items-center">
+        <span class="icon" @click="openTagsMultipleFilesMenu">
+          <TagIcon width="26" />
+        </span>
+        <span class="icon" @click="markMultipleFilesComplete">
+          <CheckIcon width="26" />
+        </span>
         <span class="icon" @click="openMoveMultipleFilesMenu">
           <FolderIcon width="26" />
         </span>
@@ -139,6 +149,8 @@ import FolderIcon from '@/components/shared/svg/FolderIcon';
 import FolderPlusIcon from '@/components/shared/svg/FolderPlusIcon';
 import TrashCanIcon from '@/components/shared/svg/TrashCanIcon';
 import TrashIcon from '@/components/shared/svg/TrashIcon';
+import TagIcon from '@/components/shared/svg/TagIcon';
+import CheckIcon from '@/components/shared/svg/CheckIcon';
 
 export default {
   name: 'TreeNavigation',
@@ -157,6 +169,8 @@ export default {
     FolderPlusIcon,
     TrashIcon,
     TrashCanIcon,
+    TagIcon,
+    CheckIcon,
   },
   data() {
     return {
@@ -290,6 +304,28 @@ export default {
       this.selectedFiles = [];
     },
 
+    openTagsMultipleFilesMenu() {
+      this.$refs.tagsModal.promptEditTagsForMultipleFiles(this.selectedFiles);
+    },
+    onTagsAppliedToMultipleFiles() {
+      this.selectedFiles = [];
+    },
+
+    async markMultipleFilesComplete() {
+      const fileIdsList = this.selectedFiles.map((file) => file._id);
+      try {
+        const { data } = await FileController.updateMultipleFiles(
+          fileIdsList,
+          'completed',
+          true
+        );
+        this.refreshTree({ folders: data.folders, files: data.files });
+        this.selectedFiles = [];
+      } catch (_err) {
+        this.toastError(_err);
+      }
+    },
+
     async deleteFile(file, promptConfirm = true, unselectFilesAfterDelete) {
       if (promptConfirm) {
         if (!confirm(`Sure you want to delete ${file.name}?`)) return;
@@ -358,6 +394,10 @@ export default {
         const index = this.selectedFiles.findIndex((f) => f._id === file._id);
         this.selectedFiles.splice(index, 1);
       }
+    },
+
+    isFileSelected(file) {
+      return this.selectedFiles.some((f) => f._id === file._id);
     },
 
     unselectFile(index) {

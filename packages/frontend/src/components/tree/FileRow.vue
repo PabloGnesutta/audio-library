@@ -9,8 +9,8 @@
         <span v-if="status !== 'deleting' && status !== 'moving'"
           ><input
             type="checkbox"
-            v-model="selected"
-            @change="toggleFileSelected()"
+            :checked="selected"
+            @change="toggleFileSelected($event.target.checked)"
         /></span>
         <span
           class="flex-1 file-name"
@@ -58,13 +58,7 @@ import CheckIcon from "@/components/shared/svg/CheckIcon";
 export default {
   name: "FileRow",
   components: { FolderIcon, TrashCanIcon, TagIcon, CheckIcon },
-  props: ["file", "status", "active", "isLastSeen"],
-
-  data() {
-    return {
-      selected: false,
-    };
-  },
+  props: ["file", "status", "active", "isLastSeen", "selected"],
 
   methods: {
     openFile() {
@@ -85,8 +79,8 @@ export default {
       this.$emit("deleteFile");
     },
 
-    toggleFileSelected() {
-      this.$emit("toggleFileSelected", this.selected);
+    toggleFileSelected(selected) {
+      this.$emit("toggleFileSelected", selected);
     },
   },
 };

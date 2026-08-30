@@ -1,7 +1,7 @@
 <template>
   <ModalBox
-    v-if="editingFile"
-    :title="`Tags for ${editingFile.name}`"
+    v-if="mode"
+    :title="modalTitle"
     max-width="446px"
     @cerrarModal="resetState"
   >
@@ -11,7 +11,7 @@
           {{ tag }}
           <span class="remove pointer" @click="removeTag(tag)">&times;</span>
         </span>
-        <span v-if="!tags.length" class="no-tags select-none">No tags yet</span>
+        <span v-if="!tags.length" class="no-tags select-none">No tags added yet</span>
       </div>
 
       <input
@@ -30,7 +30,7 @@
       <div class="buttons">
         <div class="btn btn-secondary" @click="resetState">Cancel</div>
         <button class="btn btn-primary" :disabled="loading" @click="save">
-          Save
+          {{ mode === 'multiple' ? 'Apply tags' : 'Save' }}
         </button>
       </div>
     </div>
@@ -51,7 +51,9 @@ export default {
   data() {
     return {
       loading: false,
+      mode: null, // 'single' | 'multiple'
       editingFile: null,
+      editingFiles: [],
       tags: [],
       newTag: '',
     };
@@ -61,6 +63,12 @@ export default {
     ...mapGetters({
       allTags: 'tree/allTags',
     }),
+
+    modalTitle() {
+      return this.mode === 'multiple'
+        ? `Apply tags to ${this.editingFiles.length} files`
+        : `Tags for ${this.editingFile && this.editingFile.name}`;
+    },
   },
 
   methods: {
@@ -69,8 +77,18 @@ export default {
     }),
 
     promptEditTags(file) {
+      this.mode = 'single';
       this.editingFile = file;
       this.tags = [...(file.tags || [])];
+      this.$nextTick(() => {
+        this.$refs['new-tag-input'].focus();
+      });
+    },
+
+    promptEditTagsForMultipleFiles(files) {
+      this.mode = 'multiple';
+      this.editingFiles = files;
+      this.tags = [];
       this.$nextTick(() => {
         this.$refs['new-tag-input'].focus();
       });
@@ -90,12 +108,22 @@ export default {
     async save() {
       try {
         this.loading = true;
-        const { data } = await FileController.updateFile(
-          this.editingFile._id,
-          'tags',
-          this.tags
-        );
-        this.refreshTree({ folders: data.folders, files: data.files });
+        if (this.mode === 'multiple') {
+          const fileIdsList = this.editingFiles.map((file) => file._id);
+          const { data } = await FileController.addTagsToMultipleFiles(
+            fileIdsList,
+            this.tags
+          );
+          this.refreshTree({ folders: data.folders, files: data.files });
+          this.$emit('tagsAppliedToMultipleFiles');
+        } else {
+          const { data } = await FileController.updateFile(
+            this.editingFile._id,
+            'tags',
+            this.tags
+          );
+          this.refreshTree({ folders: data.folders, files: data.files });
+        }
         this.resetState();
       } catch (_err) {
         this.toastError(_err);
@@ -105,7 +133,9 @@ export default {
     },
 
     resetState() {
+      this.mode = null;
       this.editingFile = null;
+      this.editingFiles = [];
       this.tags = [];
       this.newTag = '';
     },

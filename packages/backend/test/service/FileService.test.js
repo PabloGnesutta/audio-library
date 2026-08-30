@@ -66,3 +66,28 @@ describe('FileService.deleteMultipleFiles', () => {
     expect(user.lastFileSeen).toBeNull();
   });
 });
+
+describe('FileService.addTagsToMultipleFiles', () => {
+  test('merges new tags into each file\'s existing tags without duplicating', async () => {
+    const fileA = makeFile({ _id: 'a', tags: ['podcast'], markModified: jest.fn(), save: jest.fn().mockResolvedValue() });
+    const fileB = makeFile({ _id: 'b', tags: ['podcast', 'spanish'], markModified: jest.fn(), save: jest.fn().mockResolvedValue() });
+    FileHelper.getUserFileById.mockImplementation((_user, _id) =>
+      Promise.resolve(_id === 'a' ? fileA : fileB)
+    );
+    const user = makeUser();
+
+    await FileService.addTagsToMultipleFiles(user, { fileIdsList: ['a', 'b'], tags: ['spanish', 'favorite'] });
+
+    expect(fileA.tags).toEqual(['podcast', 'spanish', 'favorite']);
+    expect(fileB.tags).toEqual(['podcast', 'spanish', 'favorite']);
+    expect(fileA.save).toHaveBeenCalledTimes(1);
+    expect(fileB.save).toHaveBeenCalledTimes(1);
+  });
+
+  test('throws a BusinessError when a file does not belong to the user', async () => {
+    FileHelper.getUserFileById.mockResolvedValue(null);
+    await expect(
+      FileService.addTagsToMultipleFiles(makeUser(), { fileIdsList: ['missing'], tags: ['x'] })
+    ).rejects.toBeInstanceOf(BusinessError);
+  });
+});

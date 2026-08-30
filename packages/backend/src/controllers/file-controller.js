@@ -57,6 +57,17 @@ exports.updateMultipleFiles = async (req, res, next) => {
   }
 };
 
+exports.addTagsToMultipleFiles = async (req, res, next) => {
+  console.log('addTagsToMultipleFiles', req.body);
+  try {
+    const user = await FileService.addTagsToMultipleFiles(req.user, req.body);
+    const response = await UserHelper.clientData(user);
+    res.json(response);
+  } catch (_err) {
+    next(ErrorFactory.create(_err, 'Error while applying tags to multiple files'));
+  }
+};
+
 exports.deleteFile = async (req, res, next) => {
   console.log('deleteFile', req.params);
   try {

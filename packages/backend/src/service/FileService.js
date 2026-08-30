@@ -124,6 +124,18 @@ class FileService {
     }
     return user;
   }
+
+  static async addTagsToMultipleFiles(user, { fileIdsList, tags }) {
+    for (const _id of fileIdsList) {
+      const file = await FileHelper.getUserFileById(user, _id);
+      if (!file) throw new BusinesError("Couldn't find user file");
+      file.tags = Array.from(new Set([...(file.tags || []), ...tags]));
+      file.lastInteraction = new Date();
+      file.markModified('tags');
+      await file.save();
+    }
+    return user;
+  }
 }
 
 module.exports = FileService;

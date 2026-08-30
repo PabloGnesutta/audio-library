@@ -37,6 +37,10 @@ class FileController extends BaseController {
     return this.put('/file/multiple-files', { fileIdsList, param, value });
   }
 
+  static addTagsToMultipleFiles(fileIdsList, tags) {
+    return this.put('/file/multiple-files/tags', { fileIdsList, tags });
+  }
+
   static updateMetadata(_id, param, currentTime) {
     return this.put(`/file/metadata`, { _id, param, value: currentTime });
   }
