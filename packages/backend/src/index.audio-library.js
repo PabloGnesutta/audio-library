@@ -25,11 +25,13 @@ const authRoutes = require('./routes/auth-routes');
 const fileRoutes = require('./routes/file-routes');
 const userRoutes = require('./routes/user-routes');
 const bookmarkRoutes = require('./routes/bookmark-routes');
+const shareRoutes = require('./routes/share-routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', authorizationMiddleware, userRoutes);
 app.use('/api/file', authorizationMiddleware, fileRoutes);
 app.use('/api/bookmark', authorizationMiddleware, bookmarkRoutes);
+app.use('/api/share', authorizationMiddleware, shareRoutes);
 app.use('/api', get404);
 
 //SPA

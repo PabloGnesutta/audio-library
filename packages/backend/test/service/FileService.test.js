@@ -1,8 +1,10 @@
 jest.mock('../../src/helper/FileHelper');
 jest.mock('../../src/helper/S3Helper');
+jest.mock('../../src/helper/ShareHelper');
 
 const FileHelper = require('../../src/helper/FileHelper');
 const S3Helper = require('../../src/helper/S3Helper');
+const ShareHelper = require('../../src/helper/ShareHelper');
 const FileService = require('../../src/service/FileService');
 const BusinessError = require('../../src/exception/BusinessError');
 
@@ -25,6 +27,37 @@ function makeUser(overrides = {}) {
 
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+describe('FileService.getFileUrl', () => {
+  test('returns a signed url when the requesting user has access (owner or share)', async () => {
+    const file = makeFile();
+    FileHelper.getFileById.mockResolvedValue(file);
+    ShareHelper.canAccessFile.mockResolvedValue(true);
+    S3Helper.getSignedUrl.mockResolvedValue('https://signed.example/file.mp3');
+
+    const { url } = await FileService.getFileUrl(makeUser(), 'file-1');
+
+    expect(ShareHelper.canAccessFile).toHaveBeenCalledWith(expect.any(Object), file);
+    expect(S3Helper.getSignedUrl).toHaveBeenCalledWith('getObject', { Key: file.key, Expires: 3600 });
+    expect(url).toBe('https://signed.example/file.mp3');
+  });
+
+  test('throws a BusinessError when the file does not exist', async () => {
+    FileHelper.getFileById.mockResolvedValue(null);
+    await expect(FileService.getFileUrl(makeUser(), 'missing-file'))
+      .rejects.toBeInstanceOf(BusinessError);
+    expect(ShareHelper.canAccessFile).not.toHaveBeenCalled();
+  });
+
+  test('throws a BusinessError when the user neither owns nor has been shared the file', async () => {
+    FileHelper.getFileById.mockResolvedValue(makeFile());
+    ShareHelper.canAccessFile.mockResolvedValue(false);
+
+    await expect(FileService.getFileUrl(makeUser(), 'file-1'))
+      .rejects.toBeInstanceOf(BusinessError);
+    expect(S3Helper.getSignedUrl).not.toHaveBeenCalled();
+  });
 });
 
 describe('FileService.deleteFile', () => {

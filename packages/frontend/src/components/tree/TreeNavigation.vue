@@ -37,6 +37,8 @@
       >
     </div>
 
+    <SharedWithMe @openSharedFile="onOpenSharedFile" />
+
     <!-- FOLDERS -->
     <div class="folders-container">
       <div
@@ -75,6 +77,7 @@
               @openFile="openFileWithIndexes(treeIndex, fileIndex)"
               @openFileMoveMenu="openFileMoveMenu"
               @openFileTagsMenu="openFileTagsMenu"
+              @openFileShareMenu="openFileShareMenu"
               @deleteFile="deleteFile(file)"
               @toggleFileSelected="toggleFileSelected(file, $event)"
             />
@@ -95,6 +98,7 @@
       ref="tagsModal"
       @tagsAppliedToMultipleFiles="onTagsAppliedToMultipleFiles"
     />
+    <ShareModal ref="shareModal" />
     <BookmarkSearchModal
       ref="bookmarkSearch"
       @bookmarkSelected="goToBookmarkSearchResult"
@@ -148,9 +152,11 @@ import UploadIcon from '@/components/shared/svg/UploadIcon';
 import FolderSelect from '@/components/shared/inputs/FolderSelect';
 import FileRow from '@/components/tree/FileRow';
 import FolderRow from '@/components/tree/FolderRow';
+import SharedWithMe from '@/components/tree/SharedWithMe';
 import AddFolder from '@/components/tree/popups/AddFolder';
 import MoveFiles from '@/components/tree/popups/MoveFiles';
 import TagsModal from '@/components/tree/popups/TagsModal';
+import ShareModal from '@/components/tree/popups/ShareModal';
 import BookmarkSearchModal from '@/components/bookmarks/BookmarkSearchModal';
 import ArrowLeftIcon from '@/components/shared/svg/ArrowLeftIcon';
 import FolderIcon from '@/components/shared/svg/FolderIcon';
@@ -169,10 +175,12 @@ export default {
     UploadIcon,
     FileRow,
     FolderRow,
+    SharedWithMe,
     FolderSelect,
     AddFolder,
     MoveFiles,
     TagsModal,
+    ShareModal,
     BookmarkSearchModal,
     ArrowLeftIcon,
     FolderIcon,
@@ -295,6 +303,14 @@ export default {
 
     openFileTagsMenu(file) {
       this.$refs.tagsModal.promptEditTags(file);
+    },
+
+    openFileShareMenu(file) {
+      this.$refs.shareModal.promptShareFile(file);
+    },
+
+    onOpenSharedFile(file) {
+      this.$emit('sharedFileSelected', file);
     },
 
     toggleTagFilter(tag) {

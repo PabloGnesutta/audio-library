@@ -24,4 +24,8 @@ FileSchema.post('deleteOne', { document: true, query: false }, function (doc, ne
   this.model('Bookmark').deleteMany({ owner: doc.owner, file: doc._id }, next);
 });
 
+FileSchema.post('deleteOne', { document: true, query: false }, function (doc, next) {
+  this.model('Share').deleteMany({ fileId: doc._id }, next);
+});
+
 module.exports = mongoose.model('File', FileSchema);

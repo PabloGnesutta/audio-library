@@ -2,12 +2,18 @@ const config = require('../config');
 const FileFactory = require('../factory/FileFactory');
 const FileHelper = require('../helper/FileHelper');
 const S3Helper = require('../helper/S3Helper');
+const ShareHelper = require('../helper/ShareHelper');
 const BusinesError = require('../exception/BusinessError');
 
 
 class FileService {
   static async getFileUrl(user, fileId) {
-    const file = await FileHelper.getUserFileById(user, fileId);
+    const file = await FileHelper.getFileById(fileId);
+    if (!file) throw new BusinesError('File not found');
+
+    const hasAccess = await ShareHelper.canAccessFile(user, file);
+    if (!hasAccess) throw new BusinesError('File not found');
+
     const url = await S3Helper.getSignedUrl('getObject', { Key: file.key, Expires: 3600 });
     return { url };
   }

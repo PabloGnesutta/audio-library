@@ -9,6 +9,7 @@
               :lastFileSeen="user.lastFileSeen"
               :lastFolderSeen="user.lastFolderSeen"
               @fileSelected="onFileSelected"
+              @sharedFileSelected="onSharedFileSelected"
               @ocultarSidebar="hideSidebar"
             />
           </template>
@@ -96,6 +97,7 @@ export default {
       bookmarks: null,
       audioUrl: '',
       autoplayNextFile: false,
+      currentFileIsShared: false,
     };
   },
 
@@ -146,7 +148,7 @@ export default {
     },
 
     async updateCurrentTime({ currentTime, refreshCache }) {
-      if (currentTime > 0) {
+      if (currentTime > 0 && !this.currentFileIsShared) {
         try {
           await FileController.updateMetadata(
             this.currentFile._id,
@@ -169,6 +171,7 @@ export default {
     },
 
     async onFileCompleted() {
+      if (this.currentFileIsShared) return;
       try {
         await FileController.updateFile(this.currentFile._id, 'completed', true);
         this.currentFile.completed = true;
@@ -225,6 +228,7 @@ export default {
       this.currentFile = this.arbol[treeIndex].files[fileIndex];
       this.currentTreeIndex = treeIndex;
       this.currentFileIndex = fileIndex;
+      this.currentFileIsShared = false;
       this.arbol[treeIndex].folder.lastFileSeen = this.currentFile._id;
 
       if (typeof seekTime === 'number') {
@@ -238,6 +242,17 @@ export default {
       const autoplay = this.autoplayNextFile;
       this.autoplayNextFile = false;
       this.getFileUrlAndBookmarks(this.currentFile, autoplay);
+    },
+
+    onSharedFileSelected(file) {
+      // folderId is only meaningful within the owner's own folder ids -- null
+      // it out so the backend's markLastFileSeen bookkeeping (keyed off the
+      // *viewer's* folders) doesn't accidentally match one of their own.
+      this.currentFile = { ...file, folderId: null };
+      this.currentTreeIndex = null;
+      this.currentFileIndex = null;
+      this.currentFileIsShared = true;
+      this.getFileUrlAndBookmarks(this.currentFile, false);
     },
 
     selectPrevious() {

@@ -41,6 +41,9 @@
       <span class="icon pointer mr-1" @click="openFileMoveMenu()">
         <FolderIcon width="20" />
       </span>
+      <span class="icon pointer mr-1" @click="openFileShareMenu()">
+        <ShareIcon width="18" />
+      </span>
       <span class="icon pointer" @click="deleteFile()">
         <TrashCanIcon width="20" />
       </span>
@@ -54,10 +57,11 @@ import FolderIcon from "@/components/shared/svg/FolderIcon";
 import TrashCanIcon from "@/components/shared/svg/TrashCanIcon";
 import TagIcon from "@/components/shared/svg/TagIcon";
 import CheckIcon from "@/components/shared/svg/CheckIcon";
+import ShareIcon from "@/components/shared/svg/ShareIcon";
 
 export default {
   name: "FileRow",
-  components: { FolderIcon, TrashCanIcon, TagIcon, CheckIcon },
+  components: { FolderIcon, TrashCanIcon, TagIcon, CheckIcon, ShareIcon },
   props: ["file", "status", "active", "isLastSeen", "selected"],
 
   methods: {
@@ -73,6 +77,10 @@ export default {
 
     openFileTagsMenu() {
       this.$emit("openFileTagsMenu", this.file);
+    },
+
+    openFileShareMenu() {
+      this.$emit("openFileShareMenu", this.file);
     },
 
     deleteFile() {

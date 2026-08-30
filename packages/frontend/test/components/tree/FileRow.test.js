@@ -80,10 +80,12 @@ describe('FileRow', () => {
 
     await icons[0].trigger('click'); // tags
     await icons[1].trigger('click'); // move
-    await icons[2].trigger('click'); // delete
+    await icons[2].trigger('click'); // share
+    await icons[3].trigger('click'); // delete
 
     expect(wrapper.emitted('openFileTagsMenu')[0]).toEqual([file]);
     expect(wrapper.emitted('openFileMoveMenu')[0]).toEqual([file]);
+    expect(wrapper.emitted('openFileShareMenu')[0]).toEqual([file]);
     expect(wrapper.emitted('deleteFile')).toBeTruthy();
   });
 
