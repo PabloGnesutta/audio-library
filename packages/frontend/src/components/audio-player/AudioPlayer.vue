@@ -54,13 +54,28 @@
         {{ totalDurationDisplay }}
       </div>
 
-      <PlaybackRateSelect
-        class="mb-1"
-        :playback-rate="playbackRate"
-        @resetPlaybackRate="resetPlaybackRate"
-        @speedDown="speedDown"
-        @speedUp="speedUp"
-      />
+      <div class="playback-and-sleep-timer flex items-center justify-center gap-2 mb-1">
+        <PlaybackRateSelect
+          :playback-rate="playbackRate"
+          @resetPlaybackRate="resetPlaybackRate"
+          @speedDown="speedDown"
+          @speedUp="speedUp"
+        />
+
+        <div
+          class="sleep-timer color-3 flex items-center justify-center gap-1 pointer select-none"
+          :class="{ active: sleepTimerMinutes }"
+          :title="
+            sleepTimerMinutes
+              ? `Sleep timer: ${sleepTimerRemainingDisplay} remaining (click to change)`
+              : 'Set sleep timer'
+          "
+          @click="cycleSleepTimer"
+        >
+          <MoonIcon width="16" />
+          <span v-if="sleepTimerMinutes">{{ sleepTimerRemainingDisplay }}</span>
+        </div>
+      </div>
 
       <!-- BUTTONS -->
       <div
@@ -157,6 +172,7 @@ import PauseIcon from "@/components/shared/svg/PauseIcon.vue";
 import ForwardIcon from "@/components/shared/svg/ForwardIcon.vue";
 import PreviousIcon from "@/components/shared/svg/PreviousIcon.vue";
 import NextIcon from "@/components/shared/svg/NextIcon.vue";
+import MoonIcon from "@/components/shared/svg/MoonIcon.vue";
 
 export default {
   name: "AudioPlayer",
@@ -169,6 +185,7 @@ export default {
     ForwardIcon,
     PreviousIcon,
     NextIcon,
+    MoonIcon,
   },
 
   props: ["audioUrl", "fileName", "fileType", "startAt", "bookmarks"],
@@ -205,15 +222,27 @@ export default {
       // showResumeModal: true,
       reanudarReproducción: false,
       clickTriggers: ["Enter", "Space"],
+
+      sleepTimerMinutesOptions: [15, 30, 45, 60],
+      sleepTimerMinutes: null,
+      sleepTimerRemainingSeconds: 0,
+      sleepTimerIntervalId: null,
     };
   },
 
   computed: {
     ...mapGetters(["pageFirstInteraction", "avoidKeyListeners"]),
+
+    sleepTimerRemainingDisplay() {
+      return this.sleepTimerMinutes
+        ? this.toHHMMSS(this.sleepTimerRemainingSeconds)
+        : null;
+    },
   },
 
   beforeUnmount() {
     document.removeEventListener("keyup", this.onKeyUp);
+    this.clearSleepTimerInterval();
   },
 
   mounted() {
@@ -417,6 +446,51 @@ export default {
     resetPlaybackRate() {
       this.playbackRate = 1;
       this.AP.playbackRate = this.playbackRate;
+    },
+
+    // Sleep Timer
+    // Intentionally untouched by init() -- it should keep counting down
+    // (and still pause playback when it fires) across track changes.
+
+    cycleSleepTimer() {
+      const options = this.sleepTimerMinutesOptions;
+      if (this.sleepTimerMinutes === null) {
+        this.startSleepTimer(options[0]);
+        return;
+      }
+
+      const nextMinutes = options[options.indexOf(this.sleepTimerMinutes) + 1];
+      if (nextMinutes) {
+        this.startSleepTimer(nextMinutes);
+      } else {
+        this.cancelSleepTimer();
+      }
+    },
+
+    startSleepTimer(minutes) {
+      this.clearSleepTimerInterval();
+      this.sleepTimerMinutes = minutes;
+      this.sleepTimerRemainingSeconds = minutes * 60;
+      this.sleepTimerIntervalId = setInterval(() => {
+        this.sleepTimerRemainingSeconds--;
+        if (this.sleepTimerRemainingSeconds <= 0) {
+          if (this.AP) this.AP.pause();
+          this.cancelSleepTimer();
+        }
+      }, 1000);
+    },
+
+    cancelSleepTimer() {
+      this.clearSleepTimerInterval();
+      this.sleepTimerMinutes = null;
+      this.sleepTimerRemainingSeconds = 0;
+    },
+
+    clearSleepTimerInterval() {
+      if (this.sleepTimerIntervalId) {
+        clearInterval(this.sleepTimerIntervalId);
+        this.sleepTimerIntervalId = null;
+      }
     },
 
     togglePlayPause() {
@@ -840,5 +914,13 @@ $dotSize: 20px;
   font-size: 0.5rem;
   font-weight: bold;
   transform: translate(-50%, -50%);
+}
+
+.sleep-timer {
+  font-size: 0.9rem;
+  padding: 0.25em 0.5em;
+  &.active {
+    color: var(--color-1);
+  }
 }
 </style>

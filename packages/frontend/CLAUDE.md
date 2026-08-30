@@ -115,8 +115,13 @@ Conventions for adding more:
   needs no store setup on its own.
 
 Not covered yet: any component that touches `vue-router` directly, or
-the audio-player/drag-and-drop-heavy components (`AudioPlayer.vue`,
-drag handlers in `TreeNavigation.vue`) — those lean on real browser
-APIs (`<audio>`, `DataTransfer`) that are either unavailable or awkward
-to fake under jsdom, and are better candidates for e2e coverage later
-than for `mount()`-level tests.
+the native-`<audio>`-driven parts of `AudioPlayer.vue` (play/pause,
+scrubbing, bookmarks) or the drag handlers in `TreeNavigation.vue` —
+those lean on real browser APIs (`<audio>`, `DataTransfer`) that are
+either unavailable or awkward to fake under jsdom, and are better
+candidates for e2e coverage later than for `mount()`-level tests.
+`AudioPlayer.test.js` is the one exception so far: it covers the sleep
+timer (added 2026-08-30), which is plain component state/timers and
+never touches `this.AP` except a guarded `.pause()` call, so it's
+testable by stubbing `wrapper.vm.AP` and driving `vi.useFakeTimers()`
+rather than a real `<audio>` element.
