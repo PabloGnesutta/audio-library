@@ -6,7 +6,7 @@ const BusinessError = require('../exception/BusinessError');
 
 exports.signUp =
   (req, res, next) => {
-    console.log('signUp', req.body);
+    console.log('signUp', req.body.email);
     AuthService.signUp(req.body)
       .then(() => {
         res.json({
@@ -20,7 +20,7 @@ exports.signUp =
 
 exports.verifyEmail =
   (req, res, next) => {
-    console.log('verifyEmail', req.body);
+    console.log('verifyEmail');
     AuthService.verifyEmail(req.body.token)
       .then(email => {
         res.json({ email });
@@ -32,7 +32,7 @@ exports.verifyEmail =
 
 exports.login =
   (req, res, next) => {
-    console.log('login', req.body);
+    console.log('login', req.body.email);
     AuthService.login(req.body)
       .then(clientData => {
         res.json(clientData);

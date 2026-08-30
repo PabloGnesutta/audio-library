@@ -19,6 +19,7 @@ jobs:
             set -e
             cd ${{ secrets.DEPLOY_PATH }}
             git pull origin main
+            nvm use 24
             npm install
             npm run build
             pm2 restart ${{ secrets.PM2_APP_NAME }}
