@@ -28,5 +28,9 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // e2e/**/*.spec.js are Playwright specs (own runner, own `test`
+    // global) -- Vitest's default globs would otherwise pick them up
+    // too and fail trying to run them as unit tests.
+    exclude: ['**/node_modules/**', 'e2e/**'],
   },
 });

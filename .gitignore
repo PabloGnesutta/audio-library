@@ -1,6 +1,11 @@
 .DS_Store
 node_modules
 
+# Playwright
+packages/frontend/test-results
+packages/frontend/playwright-report
+packages/frontend/e2e/screenshots
+
 # Editor directories and files
 .idea
 .vscode

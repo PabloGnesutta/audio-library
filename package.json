@@ -12,7 +12,8 @@
     "dev": "concurrently -n backend,frontend -c blue,green \"npm run serve -w packages/backend\" \"npm run serve -w packages/frontend\"",
     "build": "npm run build -w packages/frontend",
     "start": "npm start -w packages/backend",
-    "test": "npm test -w packages/backend && npm test -w packages/frontend"
+    "test": "npm test -w packages/backend && npm test -w packages/frontend",
+    "test:e2e": "npm run test:e2e -w packages/frontend"
   },
   "author": "Pablo Gnesutta",
   "devDependencies": {

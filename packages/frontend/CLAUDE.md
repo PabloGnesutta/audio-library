@@ -125,3 +125,39 @@ timer (added 2026-08-30), which is plain component state/timers and
 never touches `this.AP` except a guarded `.pause()` call, so it's
 testable by stubbing `wrapper.vm.AP` and driving `vi.useFakeTimers()`
 rather than a real `<audio>` element.
+
+## e2e tests (Playwright, added 2026-08-30)
+
+`npm run test:e2e` (from this package, or `npm run test:e2e` at the repo
+root) runs `playwright.config.js`'s `chromium` project against
+`./e2e/*.spec.js`. The config boots the frontend dev server itself
+(`webServer`) and points `baseURL` at
+`http://localhost:8080/audio-library/` -- the router uses
+`createWebHistory('audio-library')`, so every route lives under that
+prefix. **Navigate with relative paths, no leading slash**
+(`page.goto('login')`, not `page.goto('/login')`): a leading slash is
+resolved as absolute and silently drops the `/audio-library` prefix,
+which looks like it works (Vite's dev server serves `index.html` for
+any path) but actually renders no route at all, since vue-router never
+matches — the failure mode is subtle (unrelated elements like the
+header still render) so assert on something route-specific, not just
+the header/logo.
+
+**Deliberately not started yet: the backend, or anything authenticated.**
+`packages/backend/.env` points at the real dev MongoDB Atlas instance
+and real SMTP — there's no test-only DB and no way to mark a signed-up
+user verified without actually receiving the verification email. Until
+that exists (tracked as future work — a test DB + a manual
+mark-verified helper instead of sending real email), every spec here
+must stay scoped to routes that render with zero API calls (currently
+just `/login`, which the router only guards for `meta.requiresAuth`
+routes) and must never submit a form or otherwise hit the real backend.
+`playwright.config.js`'s `webServer` only starts `npm run serve` for
+this reason — add the backend's `webServer` entry once auth is safe to
+exercise here.
+
+`e2e/smoke.spec.js` also takes a full-page screenshot to
+`e2e/screenshots/` (gitignored, along with `test-results/` and
+`playwright-report/`) purely so it can be read back and looked at
+directly — this is how UI changes get visually verified now instead of
+just trusted from the code.
