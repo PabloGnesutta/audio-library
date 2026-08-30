@@ -123,7 +123,7 @@
 
     <ModalBox
       v-if="pageFirstInteraction"
-      titulo="Reanudar reproducción"
+      title="Reanudar reproducción"
       @cerrarModal="resumePlayback(false)"
     >
       <div class="modal-content resume-modal">
@@ -136,7 +136,7 @@
         <button class="btn btn-primary" @click.prevent="resumePlayback(true)">
           Reanudar!
         </button>
-        <button class="btn btn-cancel" @click.prevent="resumePlayback(false)">
+        <button class="btn btn-secondary" @click.prevent="resumePlayback(false)">
           No reanudar
         </button>
       </div>
@@ -648,10 +648,9 @@ export default {
     max-width: 400px;
     margin: 0 auto;
   }
-  .btn-cancel {
+  .btn-secondary {
     margin-top: 0.5em;
     padding: 0.5em 1em;
-    border: 1px solid var(--color-2);
     font-size: 0.8rem;
   }
 }

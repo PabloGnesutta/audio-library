@@ -28,7 +28,7 @@
       </datalist>
 
       <div class="buttons">
-        <div class="btn cancel" @click="resetState">Cancel</div>
+        <div class="btn btn-secondary" @click="resetState">Cancel</div>
         <button class="btn btn-primary" :disabled="loading" @click="save">
           Save
         </button>
@@ -128,14 +128,14 @@ export default {
 }
 
 .no-tags {
-  color: #777;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .tag-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background-color: #c5c5c5;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   padding: 0.25rem 0.75rem;
   font-size: 0.9rem;
@@ -143,7 +143,7 @@ export default {
   .remove {
     font-weight: bold;
     &:hover {
-      color: var(--color-3);
+      color: var(--color-2);
     }
   }
 }
@@ -160,12 +160,6 @@ input {
   .btn {
     border-radius: 6px;
     text-align: center;
-    &.cancel {
-      border: 1px solid #333;
-    }
-    &.cancel:hover {
-      border: 1px solid black;
-    }
   }
 }
 </style>

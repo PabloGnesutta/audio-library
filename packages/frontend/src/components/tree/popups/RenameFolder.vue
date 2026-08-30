@@ -2,7 +2,7 @@
   <div>
     <ModalBox
       v-if="renamingFolder"
-      titulo="Rename Folder"
+      title="Rename Folder"
       evitar-cierre="true"
       @cerrarModal="resetState"
     >

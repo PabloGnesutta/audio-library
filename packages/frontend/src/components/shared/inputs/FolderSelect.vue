@@ -66,38 +66,38 @@ export default {
 };
 </script>
 
-<style scode lang="scss">
+<style scoped lang="scss">
 .folder-select {
   position: relative;
-  color: black;
+  color: var(--color-text);
 }
 
 .input {
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
-  background: white;
+  background: #333;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  border: 1px solid #cfcfcf;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .dropdown {
   position: absolute;
   width: 100%;
-  border: 1px solid #cfcfcf;
-  background: white;
-  // padding-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #333;
   z-index: 11;
   max-height: 300px;
   overflow-y: auto;
   transform: translateY(4px);
   border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   .item {
     padding: 0.5rem 1rem;
     cursor: pointer;
     &:hover {
-      background: #dbfffd;
+      background: rgba(255, 255, 255, 0.08);
     }
   }
 }

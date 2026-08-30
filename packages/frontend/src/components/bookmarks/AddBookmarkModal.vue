@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="buttons">
-        <div class="btn cancel" @click="closeModal">Cancel</div>
+        <div class="btn btn-secondary" @click="closeModal">Cancel</div>
         <button class="btn btn-primary" @click.prevent="addBookmark">
           Confirm
         </button>
@@ -105,7 +105,8 @@ export default {
 
   .time {
     padding: 0.75rem;
-    background-color: #c5c5c5;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
   }
 
   .buttons {
@@ -114,12 +115,6 @@ export default {
     .btn {
       border-radius: 6px;
       text-align: center;
-      &.cancel {
-        border: 1px solid #333;
-      }
-      &.cancel:hover {
-        border: 1px solid black;
-      }
     }
   }
 }

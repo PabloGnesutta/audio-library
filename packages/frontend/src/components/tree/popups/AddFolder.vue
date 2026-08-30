@@ -2,7 +2,7 @@
   <div>
     <ModalBox
       v-if="creatingFolder"
-      titulo="Create new folder"
+      title="Create new folder"
       evitar-cierre="true"
       @cerrarModal="resetState"
     >

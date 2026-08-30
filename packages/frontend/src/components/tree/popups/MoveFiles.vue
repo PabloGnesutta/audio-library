@@ -3,7 +3,7 @@
     <!-- Single File -->
     <ModalBox
       v-if="movingSingleFile"
-      titulo="Select file's new location"
+      title="Select file's new location"
       @cerrarModal="movingSingleFile = false"
     >
       <div class="modal-content">
@@ -24,7 +24,7 @@
     <!-- Multiple Files -->
     <ModalBox
       v-if="movingMultipleFiles"
-      titulo="Select files' new location"
+      title="Select files' new location"
       @cerrarModal="movingMultipleFiles = false"
     >
       <div class="modal-content">
@@ -158,11 +158,12 @@ export default {
 
 .files-list {
   border-radius: 6px;
-  background-color: #f6f6f6;
+  background-color: rgba(255, 255, 255, 0.06);
   padding: 1rem;
   margin-top: 1rem;
   h4 {
     margin-bottom: 0.75rem;
+    font-weight: normal;
   }
   .file-row {
     margin-bottom: 0.5rem;

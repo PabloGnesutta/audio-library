@@ -4,7 +4,7 @@
     @click.self="onClickBackdrop"
   >
     <div
-      class="backdrop-content relative of-y-auto color-text-dark"
+      class="backdrop-content relative of-y-auto"
       :style="{ maxWidth, maxHeight }"
     >
       <div @click="cerrarModal" class="close-icon absolute pointer">
@@ -56,30 +56,45 @@ export default {
 .backdrop {
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.65);
 }
 
 .backdrop-content {
-  background: #d3d3d3;
-  border-radius: 10px;
+  background: var(--color-4);
+  color: var(--color-text);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   width: 90%;
   white-space: normal;
-  box-shadow: 0 2px 10px 1px var(--color-text-dark);
-  padding: 1.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  padding: 1.75rem;
 }
 
 .title {
   max-width: 600px;
-  margin: 0 auto 2rem;
+  margin: 0 0 1.5rem;
+  padding-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .close-icon {
-  top: 5px;
-  right: 16px;
-  font-size: 2.5rem;
-  font-weight: bold;
-  cursor: pointer;
+  top: 0.65rem;
+  right: 0.65rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.55);
+  transition: background-color 0.15s ease-out, color 0.15s ease-out;
   &:hover {
+    background: rgba(255, 255, 255, 0.1);
     color: var(--color-2);
   }
 }
