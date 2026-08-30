@@ -94,7 +94,29 @@ internals — pure refactor, no behavior change. Sanity-checked the same
 way as the backend suite: reverted a fix, confirmed the matching test
 fails with the exact original bug's error, restored it.
 
-Not covered: `.vue` component rendering/interaction (no `@vue/
-test-utils` `mount()`-based tests yet, though the package is
-installed) — this pass focused on business logic over UI, matching how
-the backend suite was scoped.
+## Component tests (`@vue/test-utils`, added 2026-08-30)
+
+`.vue` component rendering/interaction is now covered too, via
+`mount()` — `test/components/**`, mirroring `src/components/**`.
+Started with `FileRow.vue` and `TagsModal.vue` since both were touched
+in the same pass that added bulk tag-apply/mark-complete (see
+`DIAGNOSIS.md`) and were the highest regression risk at the time.
+
+Conventions for adding more:
+- Build the smallest possible Vuex store with `createStore()` —
+  only the namespaced module(s) the component actually reads via
+  `mapGetters`/`mapMutations` — then overwrite `store.commit = vi.fn()`
+  on the instance and assert against that, rather than wiring the
+  real store modules.
+- `vi.mock('@/controller/...')` the whole controller a component talks
+  to (its methods are just thin axios wrappers over `BaseController`)
+  instead of letting requests actually go through axios.
+- `ErrorMixin`'s `toastError` goes through `eventBus`, not Vuex, so it
+  needs no store setup on its own.
+
+Not covered yet: any component that touches `vue-router` directly, or
+the audio-player/drag-and-drop-heavy components (`AudioPlayer.vue`,
+drag handlers in `TreeNavigation.vue`) — those lean on real browser
+APIs (`<audio>`, `DataTransfer`) that are either unavailable or awkward
+to fake under jsdom, and are better candidates for e2e coverage later
+than for `mount()`-level tests.
