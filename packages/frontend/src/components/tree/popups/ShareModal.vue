@@ -1,7 +1,7 @@
 <template>
-  <ModalBox v-if="open" title="Share file" max-width="446px" @cerrarModal="resetState">
+  <ModalBox v-if="open" :title="modalTitle" max-width="446px" @cerrarModal="resetState">
     <div class="share-modal">
-      <p class="file-name-label">{{ file && file.name }}</p>
+      <p class="resource-name-label">{{ resource && resource.name }}</p>
 
       <div class="share-form flex items-center">
         <input
@@ -17,10 +17,10 @@
       </div>
 
       <div class="shares-list">
-        <p v-if="!fileShares.length" class="no-shares select-none">
+        <p v-if="!currentShares.length" class="no-shares select-none">
           Not shared with anyone yet
         </p>
-        <div v-for="s in fileShares" :key="s._id" class="share-row flex items-center">
+        <div v-for="s in currentShares" :key="s._id" class="share-row flex items-center">
           <span class="flex-1">{{ s.sharedWith && (s.sharedWith.name || s.sharedWith.email) }}</span>
           <span class="remove pointer" @click="revoke(s)">&times;</span>
         </div>
@@ -44,17 +44,22 @@ export default {
     return {
       loading: false,
       open: false,
-      file: null,
+      mode: null, // 'file' | 'folder'
+      resource: null, // the file or folder object being shared
       recipientEmail: '',
     };
   },
 
   computed: {
     ...mapGetters({
-      sharesForFile: 'share/sharesForFile',
+      sharesForResource: 'share/sharesForResource',
     }),
-    fileShares() {
-      return this.file ? this.sharesForFile(this.file._id) : [];
+    currentShares() {
+      const id = this.mode === 'file' ? this.resource?._id : this.resource?.id;
+      return this.resource ? this.sharesForResource(this.mode, id) : [];
+    },
+    modalTitle() {
+      return this.mode === 'folder' ? 'Share folder' : 'Share file';
     },
   },
 
@@ -65,7 +70,18 @@ export default {
     }),
 
     async promptShareFile(file) {
-      this.file = file;
+      this.mode = 'file';
+      this.resource = file;
+      await this.openModal();
+    },
+
+    async promptShareFolder(folder) {
+      this.mode = 'folder';
+      this.resource = folder;
+      await this.openModal();
+    },
+
+    async openModal() {
       this.open = true;
       this.$nextTick(() => {
         this.$refs['email-input']?.focus();
@@ -87,7 +103,11 @@ export default {
       if (!email) return;
       try {
         this.loading = true;
-        await ShareController.shareFile(this.file._id, email);
+        if (this.mode === 'folder') {
+          await ShareController.shareFolder(this.resource.id, email);
+        } else {
+          await ShareController.shareFile(this.resource._id, email);
+        }
         await this.refreshOutgoing();
         this.recipientEmail = '';
       } catch (_err) {
@@ -108,7 +128,8 @@ export default {
 
     resetState() {
       this.open = false;
-      this.file = null;
+      this.mode = null;
+      this.resource = null;
       this.recipientEmail = '';
     },
   },
@@ -121,7 +142,7 @@ export default {
   padding: 1rem 0;
 }
 
-.file-name-label {
+.resource-name-label {
   margin-bottom: 1rem;
   opacity: 0.8;
 }

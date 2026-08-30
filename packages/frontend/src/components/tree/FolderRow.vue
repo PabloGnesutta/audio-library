@@ -18,6 +18,9 @@
           <span class="icon pointer" @click="promptRenameFolder">
             <PenIcon width="20" />
           </span>
+          <span class="icon pointer" @click="promptShareFolder">
+            <ShareIcon width="18" />
+          </span>
           <span class="icon pointer" @click="promptDeleteFolder">
             <TrashIcon width="20" />
           </span>
@@ -37,11 +40,12 @@ import PenIcon from '@/components/shared/svg/PenIcon';
 import TrashIcon from '@/components/shared/svg/TrashIcon';
 import FolderIcon from '@/components/shared/svg/FolderIcon';
 import FolderOpenIcon from '@/components/shared/svg/FolderOpenIcon';
+import ShareIcon from '@/components/shared/svg/ShareIcon';
 
 export default {
   name: 'FolderRow',
   mixins: [ErrorMixin],
-  components: { RenameFolder, FolderIcon, FolderOpenIcon, PenIcon, TrashIcon },
+  components: { RenameFolder, FolderIcon, FolderOpenIcon, PenIcon, TrashIcon, ShareIcon },
 
   data() {
     return {
@@ -57,6 +61,10 @@ export default {
 
     promptRenameFolder() {
       this.$refs.renameFolder.prompt(this.folder, this.treeIndex);
+    },
+
+    promptShareFolder() {
+      this.$emit('openFolderShareMenu', this.folder);
     },
 
     promptDeleteFolder() {

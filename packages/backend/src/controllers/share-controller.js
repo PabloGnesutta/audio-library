@@ -1,13 +1,16 @@
 const ErrorFactory = require('../factory/ErrorFactory');
 const ShareService = require('../service/ShareService');
 
-exports.shareFile = async (req, res, next) => {
-  console.log('shareFile', req.body);
+exports.createShare = async (req, res, next) => {
+  console.log('createShare', req.body);
   try {
-    const share = await ShareService.shareFile(req.user, req.body);
+    const resourceType = req.body.resourceType || 'file';
+    const share = resourceType === 'folder'
+      ? await ShareService.shareFolder(req.user, req.body)
+      : await ShareService.shareFile(req.user, req.body);
     res.json({ share });
   } catch (_err) {
-    next(ErrorFactory.create(_err, 'Error while sharing file'));
+    next(ErrorFactory.create(_err, 'Error while sharing'));
   }
 };
 
@@ -28,6 +31,16 @@ exports.getIncomingShares = async (req, res, next) => {
     res.json({ shares });
   } catch (_err) {
     next(ErrorFactory.create(_err, 'Error while getting incoming shares'));
+  }
+};
+
+exports.getSharedFolderFiles = async (req, res, next) => {
+  console.log('getSharedFolderFiles', req.params.shareId);
+  try {
+    const files = await ShareService.getSharedFolderFiles(req.user, req.params.shareId);
+    res.json({ files });
+  } catch (_err) {
+    next(ErrorFactory.create(_err, 'Error while getting shared folder files'));
   }
 };
 

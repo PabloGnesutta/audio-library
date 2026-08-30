@@ -9,8 +9,11 @@ export default {
   getters: {
     outgoing: (state) => state.outgoing,
     incoming: (state) => state.incoming,
-    sharesForFile: (state) => (fileId) =>
-      state.outgoing.filter((share) => share.fileId && share.fileId._id === fileId),
+    sharesForResource: (state) => (resourceType, id) =>
+      state.outgoing.filter((share) => {
+        if (share.resourceType !== resourceType) return false;
+        return resourceType === 'file' ? share.fileId && share.fileId._id === id : share.folderId === id;
+      }),
   },
 
   mutations: {

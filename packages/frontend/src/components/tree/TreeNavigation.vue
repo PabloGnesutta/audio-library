@@ -54,6 +54,7 @@
           :treeIndex="treeIndex"
           :selected="currentFolder.id === item.folder.id"
           @onFolderClick="toggleFolder(treeIndex)"
+          @openFolderShareMenu="openFolderShareMenu"
         />
         <!-- FILES -->
         <div
@@ -307,6 +308,10 @@ export default {
 
     openFileShareMenu(file) {
       this.$refs.shareModal.promptShareFile(file);
+    },
+
+    openFolderShareMenu(folder) {
+      this.$refs.shareModal.promptShareFolder(folder);
     },
 
     onOpenSharedFile(file) {

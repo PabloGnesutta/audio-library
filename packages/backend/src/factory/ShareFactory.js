@@ -11,6 +11,17 @@ class ShareFactory {
       expiresAt: expiresAt || null,
     });
   }
+
+  static folderShareObject({ owner, folderId, sharedWith, expiresAt }) {
+    return new Share({
+      resourceType: 'folder',
+      mode: 'account',
+      owner,
+      folderId,
+      sharedWith,
+      expiresAt: expiresAt || null,
+    });
+  }
 }
 
 module.exports = ShareFactory;
