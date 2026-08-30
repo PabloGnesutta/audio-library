@@ -111,7 +111,7 @@
           <span
             class="icon control-icon focusable"
             :tabindex="loadedData ? '0' : '-1'"
-            @click="selectNext"
+            @click="selectNext()"
           >
             <NextIcon />
           </span>
@@ -148,6 +148,7 @@
 import { mapGetters, mapMutations } from "vuex";
 import eventBus from "@/plugins/event-bus";
 import Helpers from "@/helpers/helper-functions";
+import { getAutoplayEnabled } from "@/helpers/preferences";
 import PlaybackRateSelect from "@/components/audio-player/PlaybackRateSelect";
 import ModalBox from "@/components/shared/modal/ModalBox";
 import RewindIcon from "@/components/shared/svg/RewindIcon.vue";
@@ -187,6 +188,7 @@ export default {
       progressBarBufferedPercentage: 0,
 
       loadedData: false,
+      pendingAutoplay: false,
       volume: 1,
       playbackRate: 1,
 
@@ -225,12 +227,13 @@ export default {
       setFlooredCurrentTime: "audioPlayer/setFlooredCurrentTime",
     }),
 
-    init() {
+    init(autoplay = false) {
       if (this.AP) {
         this.AP.pause();
       }
       this.AP = null;
       this.loadedData = false;
+      this.pendingAutoplay = autoplay;
       this.playbackRate = 1;
       this.progressBarFillPercentage = 0;
       this.progressBarBufferedPercentage = 0;
@@ -327,7 +330,9 @@ export default {
         this.totalDurationDisplay = this.toHHMMSS(this.totalDuration);
         this.positionBookmarks();
         this.renderProgress();
-        if (this.reanudarReproducción) {
+        const shouldAutoplay = this.pendingAutoplay && getAutoplayEnabled();
+        this.pendingAutoplay = false;
+        if (this.reanudarReproducción || shouldAutoplay) {
           this.AP.play();
         }
       });
@@ -384,7 +389,7 @@ export default {
       );
 
       setTimeout(() => {
-        this.selectNext();
+        this.selectNext(true);
       }, 2000);
     },
 
@@ -431,9 +436,9 @@ export default {
       }
     },
 
-    selectNext() {
+    selectNext(auto = false) {
       this.AP.pause();
-      this.$emit("verSiguiente");
+      this.$emit("verSiguiente", auto);
     },
 
     toggleCountType() {

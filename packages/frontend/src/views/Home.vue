@@ -93,6 +93,7 @@ export default {
       fileBookmarksCache: [],
       bookmarks: null,
       audioUrl: '',
+      autoplayNextFile: false,
     };
   },
 
@@ -182,12 +183,12 @@ export default {
       }
     },
 
-    async getFileUrl(file) {
+    async getFileUrl(file, autoplay = false) {
       const audioUrlCache = this.filesAudioUrlCache[file._id];
       if (audioUrlCache) {
         this.audioUrl = audioUrlCache;
         this.$nextTick(() => {
-          this.$refs.audioPlayer.init();
+          this.$refs.audioPlayer.init(autoplay);
         });
         return;
       }
@@ -197,15 +198,15 @@ export default {
         this.audioUrl = url;
         this.filesAudioUrlCache[file._id] = url;
         this.$nextTick(() => {
-          this.$refs.audioPlayer.init();
+          this.$refs.audioPlayer.init(autoplay);
         });
       } catch (_err) {
         this.toastError(_err);
       }
     },
 
-    getFileUrlAndBookmarks(file) {
-      this.getFileUrl(file);
+    getFileUrlAndBookmarks(file, autoplay = false) {
+      this.getFileUrl(file, autoplay);
       this.getFileBookmakrs(file);
     },
 
@@ -215,7 +216,9 @@ export default {
       this.currentFileIndex = fileIndex;
       this.arbol[treeIndex].folder.lastFileSeen = this.currentFile._id;
 
-      this.getFileUrlAndBookmarks(this.currentFile);
+      const autoplay = this.autoplayNextFile;
+      this.autoplayNextFile = false;
+      this.getFileUrlAndBookmarks(this.currentFile, autoplay);
     },
 
     selectPrevious() {
@@ -230,9 +233,10 @@ export default {
       }
     },
 
-    selectNext() {
+    selectNext(auto = false) {
       const index = this.currentFileIndex + 1;
       if (index < this.arbol[this.currentTreeIndex].files.length) {
+        this.autoplayNextFile = auto;
         this.$refs.treeNavigation.openFileWithIndexes(
           this.currentTreeIndex,
           index

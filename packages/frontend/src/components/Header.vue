@@ -16,6 +16,14 @@
       <!-- Menú Hamburguesa -->
       <div class="dropdown-menu" :class="{ desplegado: menuAbierto }">
         <div class="dropdown-item" @click="cerrarSesion">Logout</div>
+        <label class="dropdown-toggle">
+          <span>Autoplay next</span>
+          <input
+            type="checkbox"
+            v-model="autoplayEnabled"
+            @change="onToggleAutoplay"
+          />
+        </label>
         <div class="user-email">{{ user.email }}</div>
       </div>
     </header>
@@ -30,12 +38,14 @@
 <script>
 import { mapMutations } from "vuex";
 import BarsIcon from "@/components/shared/svg/BarsIcon.vue";
+import { getAutoplayEnabled, setAutoplayEnabled } from "@/helpers/preferences";
 export default {
   name: "Header",
   components: { BarsIcon },
   data() {
     return {
       menuAbierto: false,
+      autoplayEnabled: getAutoplayEnabled(),
     };
   },
 
@@ -63,6 +73,10 @@ export default {
     cerrarMenues() {
       this.menuAbierto = false;
     },
+
+    onToggleAutoplay() {
+      setAutoplayEnabled(this.autoplayEnabled);
+    },
   },
 };
 </script>
@@ -70,6 +84,7 @@ export default {
 <style lang="scss" scoped>
 .header-inner {
   background: black;
+  z-index: 22;
 }
 
 .logo {
@@ -127,6 +142,20 @@ export default {
   font-size: 16px;
   &:hover {
     color: var(--color-2);
+  }
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  cursor: pointer;
+  padding: 1rem 2rem;
+  font-size: 16px;
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
   }
 }
 
