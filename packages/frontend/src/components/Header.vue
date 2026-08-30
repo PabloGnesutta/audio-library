@@ -6,28 +6,24 @@
           <div class="logo">Audio<span class="highlight">Library</span></div>
         </div>
         <div class="right" v-if="user.loaded">
-          <div class="dropdown-item" @click="cerrarSesion">Logout</div>
-          <!-- <div class="with-dropdown">
+          <div class="with-dropdown">
             <div class="header-item" @click="toggleMenuHamburguesa">
               <BarsIcon width="32" />
             </div>
-          </div> -->
+          </div>
         </div>
       </div>
       <!-- Menú Hamburguesa -->
-      <!-- <div
-        class="dropdown-menu"
-        :class="{ desplegado: mostrarMenuAgregarCarpeta }"
-      >
-        <div class="dropdown-item">Ajustes</div>
-        <div class="dropdown-item" @click="cerrarSesion">Cerrar Sesión</div>
-      </div> -->
+      <div class="dropdown-menu" :class="{ desplegado: menuAbierto }">
+        <div class="dropdown-item" @click="cerrarSesion">Logout</div>
+        <div class="user-email">{{ user.email }}</div>
+      </div>
     </header>
-    <!-- <div
+    <div
       v-if="menuAbierto"
       class="header-backdrop"
       @click.self="cerrarMenues"
-    ></div> -->
+    ></div>
   </div>
 </template>
 
@@ -40,7 +36,6 @@ export default {
   data() {
     return {
       menuAbierto: false,
-      mostrarMenuAgregarCarpeta: false,
     };
   },
 
@@ -62,12 +57,10 @@ export default {
     },
 
     toggleMenuHamburguesa() {
-      this.mostrarMenuAgregarCarpeta = !this.mostrarMenuAgregarCarpeta;
       this.menuAbierto = !this.menuAbierto;
     },
 
     cerrarMenues() {
-      this.mostrarMenuAgregarCarpeta = false;
       this.menuAbierto = false;
     },
   },
@@ -103,31 +96,30 @@ export default {
   }
 }
 
-// .with-dropdown {
-//   position: relative;
-// }
+.with-dropdown {
+  position: relative;
+}
 
 .header-item {
   padding: 1rem 1rem;
+  cursor: pointer;
 }
 
-// no refactorizo porque eventualmente puede haber más de un elemento
+.dropdown-menu {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  overflow: hidden;
+  background: var(--color-4);
+  z-index: 21;
+  transform: translate(0, -100%);
+  transition: transform 0.2s ease-out;
+}
 
-// .dropdown-menu {
-//   position: absolute;
-//   bottom: 0;
-//   right: 0;
-//   overflow: hidden;
-//   background: var(--color-4);
-//   z-index: 6;
-//   transform: translate(0, -100%);
-//   transition: transform 0.2s ease-out;
-// }
-
-// .dropdown-menu.desplegado {
-//   transform: translate(0, 100%);
-//   box-shadow: 1px -1px 3px 2px #221e1e;
-// }
+.dropdown-menu.desplegado {
+  transform: translate(0, 100%);
+  box-shadow: 1px -1px 3px 2px #221e1e;
+}
 
 .dropdown-item {
   cursor: pointer;
@@ -138,23 +130,21 @@ export default {
   }
 }
 
-// .icon {
-//   display: inline-block;
-// }
+.user-email {
+  padding: 0 2rem 1rem;
+  margin-top: -0.75rem;
+  font-size: 0.8rem;
+  opacity: 0.6;
+  white-space: nowrap;
+}
 
-// @media (min-width: 700px) {
-//   .header-item {
-//     cursor: pointer;
-//   }
-// }
-
-// .header-backdrop {
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100%;
-//   background: transparent;
-//   z-index: 5;
-// }
+.header-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: 20;
+}
 </style>

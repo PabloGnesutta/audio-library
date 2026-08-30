@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import store from '@/store';
-import eventBus from '@/plugins/event-bus';
 import AuthController from '@/controller/auth-controller';
-import ErrorMixin from '@/plugins/error-mixin';
 
 const routes = [
   {
@@ -40,9 +38,6 @@ router.beforeEach(async (to, from, next) => {
       store.commit('auth/setUser', user);
       store.commit('tree/refreshTree', { folders, files });
     } catch (_err) {
-      const msg = ErrorMixin.methods._formatError(_err);
-      eventBus.$emit('push_toast', { msg });
-
       store.commit('auth/doLogout');
       return next({ name: 'Login' });
     }
