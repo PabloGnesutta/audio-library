@@ -11,6 +11,16 @@ exports.getBookmarksForFile = async (req, res, next) => {
   }
 };
 
+exports.searchBookmarks = async (req, res, next) => {
+  console.log('searchBookmarks', req.query.q);
+  try {
+    const bookmarks = await BookmarkService.searchBookmarks(req.user, req.query.q);
+    res.json({ bookmarks });
+  } catch (_err) {
+    next(ErrorFactory.create(_err, 'Error while searching bookmarks'));
+  }
+};
+
 exports.createBookmark = async (req, res, next) => {
   console.log('createBookmark', req.body);
   try {

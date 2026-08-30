@@ -50,6 +50,27 @@ class BookmarkService {
       throw _err;
     }
   }
+
+  static async searchBookmarks(user, query) {
+    const trimmed = (query || '').trim();
+    if (!trimmed) return [];
+
+    const bookmarks = await BookmarkHelper.searchByLabel(user, trimmed);
+    return bookmarks
+      .filter((bookmark) => bookmark.file)
+      .map((bookmark) => {
+        const folder = (user.folders || []).find((f) => f.id === bookmark.file.folderId);
+        return {
+          _id: bookmark._id,
+          time: bookmark.time,
+          label: bookmark.label,
+          fileId: bookmark.file._id,
+          fileName: bookmark.file.name,
+          folderId: bookmark.file.folderId,
+          folderName: folder ? folder.name : null,
+        };
+      });
+  }
 }
 
 module.exports = BookmarkService;

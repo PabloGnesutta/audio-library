@@ -13,6 +13,13 @@ class BookmarkHelper {
     return Bookmark.find({ owner, file }, '_id time label file').sort({ time: 'asc' });
   }
 
+  static searchByLabel(owner, query) {
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return Bookmark.find({ owner, label: { $regex: escaped, $options: 'i' } })
+      .populate('file', 'name folderId')
+      .sort({ label: 'asc' });
+  }
+
 }
 
 module.exports = BookmarkHelper;

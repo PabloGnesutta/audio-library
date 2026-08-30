@@ -221,11 +221,19 @@ export default {
       this.getFileBookmakrs(file);
     },
 
-    onFileSelected({ treeIndex, fileIndex }) {
+    onFileSelected({ treeIndex, fileIndex, seekTime }) {
       this.currentFile = this.arbol[treeIndex].files[fileIndex];
       this.currentTreeIndex = treeIndex;
       this.currentFileIndex = fileIndex;
       this.arbol[treeIndex].folder.lastFileSeen = this.currentFile._id;
+
+      if (typeof seekTime === 'number') {
+        this.updateFileCurrentTimeInTree({
+          currentTime: seekTime,
+          treeIndex,
+          fileIndex,
+        });
+      }
 
       const autoplay = this.autoplayNextFile;
       this.autoplayNextFile = false;

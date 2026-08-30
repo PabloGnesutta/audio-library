@@ -13,6 +13,9 @@
 
       <!-- right -->
       <div class="right tree-header-actions flex items-center">
+        <span class="icon" @click="openBookmarkSearch">
+          <SearchIcon width="24" />
+        </span>
         <span class="icon" @click="openFileUpload">
           <UploadIcon width="28" />
         </span>
@@ -92,6 +95,10 @@
       ref="tagsModal"
       @tagsAppliedToMultipleFiles="onTagsAppliedToMultipleFiles"
     />
+    <BookmarkSearchModal
+      ref="bookmarkSearch"
+      @bookmarkSelected="goToBookmarkSearchResult"
+    />
 
     <!-- multiple-file actions -->
     <div
@@ -144,6 +151,7 @@ import FolderRow from '@/components/tree/FolderRow';
 import AddFolder from '@/components/tree/popups/AddFolder';
 import MoveFiles from '@/components/tree/popups/MoveFiles';
 import TagsModal from '@/components/tree/popups/TagsModal';
+import BookmarkSearchModal from '@/components/bookmarks/BookmarkSearchModal';
 import ArrowLeftIcon from '@/components/shared/svg/ArrowLeftIcon';
 import FolderIcon from '@/components/shared/svg/FolderIcon';
 import FolderPlusIcon from '@/components/shared/svg/FolderPlusIcon';
@@ -151,6 +159,7 @@ import TrashCanIcon from '@/components/shared/svg/TrashCanIcon';
 import TrashIcon from '@/components/shared/svg/TrashIcon';
 import TagIcon from '@/components/shared/svg/TagIcon';
 import CheckIcon from '@/components/shared/svg/CheckIcon';
+import SearchIcon from '@/components/shared/svg/SearchIcon';
 
 export default {
   name: 'TreeNavigation',
@@ -164,6 +173,7 @@ export default {
     AddFolder,
     MoveFiles,
     TagsModal,
+    BookmarkSearchModal,
     ArrowLeftIcon,
     FolderIcon,
     FolderPlusIcon,
@@ -171,6 +181,7 @@ export default {
     TrashCanIcon,
     TagIcon,
     CheckIcon,
+    SearchIcon,
   },
   data() {
     return {
@@ -257,6 +268,25 @@ export default {
 
     promptAddFolder() {
       this.$refs.addFolder.prompt();
+    },
+
+    openBookmarkSearch() {
+      this.$refs.bookmarkSearch.open();
+    },
+
+    async goToBookmarkSearchResult(result) {
+      const treeIndex = TreeHelper.treeIndexByFolderId(result.folderId);
+      if (treeIndex === -1) return;
+
+      await this.loadFolderFiles(treeIndex);
+
+      const { fileIndex } = TreeHelper.indexesByFileId(result.fileId);
+      if (fileIndex === -1) return;
+
+      this.openFileWithIndexes(treeIndex, fileIndex, result.time);
+      if (this.foldersStatus[treeIndex] !== 'DESPLEGADA') {
+        this.toggleFolder(treeIndex);
+      }
     },
 
     openFileMoveMenu(file) {
@@ -378,9 +408,9 @@ export default {
     },
 
     // needs improvement
-    openFileWithIndexes(treeIndex, fileIndex) {
+    openFileWithIndexes(treeIndex, fileIndex, seekTime) {
       this.setActiveFile(this._tree[treeIndex].files[fileIndex]);
-      this.$emit('fileSelected', { treeIndex, fileIndex });
+      this.$emit('fileSelected', { treeIndex, fileIndex, seekTime });
     },
 
     setActiveFile(file) {

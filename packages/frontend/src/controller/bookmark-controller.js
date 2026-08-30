@@ -16,6 +16,10 @@ class BookmarkController extends BaseController {
   static getForFile(fileId) {
     return this.get('/bookmark/for-file/' + fileId);
   }
+
+  static search(query) {
+    return this.get('/bookmark/search', { q: query });
+  }
 }
 
 export default BookmarkController;
