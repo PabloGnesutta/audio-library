@@ -22,6 +22,18 @@
       </div>
     </div>
 
+    <!-- TAG FILTER -->
+    <div v-if="allTags.length" class="tag-filter-row flex items-center">
+      <span
+        v-for="tag in allTags"
+        :key="tag"
+        class="tag-chip pointer"
+        :class="{ active: activeTagFilters.includes(tag) }"
+        @click="toggleTagFilter(tag)"
+        >{{ tag }}</span
+      >
+    </div>
+
     <!-- FOLDERS -->
     <div class="folders-container">
       <div
@@ -46,6 +58,7 @@
         >
           <div
             v-for="(file, fileIndex) in item.files"
+            v-show="fileMatchesTagFilter(file)"
             :key="file._id"
             draggable="true"
             @dragstart="onFileDragStart($event, item.folder, file)"
@@ -57,6 +70,7 @@
               :status="filesStatus[file._id]"
               @openFile="openFileWithIndexes(treeIndex, fileIndex)"
               @openFileMoveMenu="openFileMoveMenu"
+              @openFileTagsMenu="openFileTagsMenu"
               @deleteFile="deleteFile(file)"
               @toggleFileSelected="toggleFileSelected(file, $event)"
             />
@@ -73,6 +87,7 @@
       @movingFileFinished="onMovingFileFinished"
       @moveMultipleFilesFinished="moveMultipleFilesFinished"
     />
+    <TagsModal ref="tagsModal" />
 
     <!-- multiple-file actions -->
     <div
@@ -118,6 +133,7 @@ import FileRow from '@/components/tree/FileRow';
 import FolderRow from '@/components/tree/FolderRow';
 import AddFolder from '@/components/tree/popups/AddFolder';
 import MoveFiles from '@/components/tree/popups/MoveFiles';
+import TagsModal from '@/components/tree/popups/TagsModal';
 import ArrowLeftIcon from '@/components/shared/svg/ArrowLeftIcon';
 import FolderIcon from '@/components/shared/svg/FolderIcon';
 import FolderPlusIcon from '@/components/shared/svg/FolderPlusIcon';
@@ -135,6 +151,7 @@ export default {
     FolderSelect,
     AddFolder,
     MoveFiles,
+    TagsModal,
     ArrowLeftIcon,
     FolderIcon,
     FolderPlusIcon,
@@ -147,6 +164,7 @@ export default {
       activeFile: {},
       selectedFiles: [],
       filesStatus: {},
+      activeTagFilters: [],
     };
   },
 
@@ -156,6 +174,7 @@ export default {
     ...mapGetters({
       _tree: 'tree/arbol',
       currentFolder: 'tree/currentFolder',
+      allTags: 'tree/allTags',
     }),
   },
 
@@ -213,6 +232,26 @@ export default {
 
     openFileMoveMenu(file) {
       this.$refs.moveFiles.promptMoveFile(file);
+    },
+
+    openFileTagsMenu(file) {
+      this.$refs.tagsModal.promptEditTags(file);
+    },
+
+    toggleTagFilter(tag) {
+      const index = this.activeTagFilters.indexOf(tag);
+      if (index === -1) {
+        this.activeTagFilters.push(tag);
+      } else {
+        this.activeTagFilters.splice(index, 1);
+      }
+    },
+
+    fileMatchesTagFilter(file) {
+      if (!this.activeTagFilters.length) return true;
+      return (file.tags || []).some((tag) =>
+        this.activeTagFilters.includes(tag)
+      );
     },
     onMovingFile(file) {
       this.filesStatus[file._id] = 'moving';
@@ -343,6 +382,26 @@ export default {
       &:hover {
         color: var(--color-2);
       }
+    }
+  }
+}
+
+.tag-filter-row {
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  .tag-chip {
+    background-color: #333;
+    color: #dfdfdf;
+    border-radius: 999px;
+    padding: 0.15rem 0.7rem;
+    font-size: 0.8rem;
+    &:hover {
+      color: var(--color-2);
+    }
+    &.active {
+      background-color: var(--color-1);
+      color: black;
     }
   }
 }

@@ -14,6 +14,11 @@
         /></span>
         <span class="flex-1 file-name" @click="openFile()">
           <span>{{ file.name }}</span>
+          <span v-if="file.tags && file.tags.length" class="tags ml-1">
+            <span v-for="tag in file.tags" :key="tag" class="tag-chip">{{
+              tag
+            }}</span>
+          </span>
         </span>
       </div>
     </div>
@@ -23,6 +28,9 @@
       v-if="status !== 'deleting' && status !== 'moving' && status !== null"
       class="right flex ml-2"
     >
+      <span class="icon pointer mr-1" @click="openFileTagsMenu()">
+        <TagIcon width="18" />
+      </span>
       <span class="icon pointer mr-1" @click="openFileMoveMenu()">
         <FolderIcon width="20" />
       </span>
@@ -37,10 +45,11 @@
 <script>
 import FolderIcon from "@/components/shared/svg/FolderIcon";
 import TrashCanIcon from "@/components/shared/svg/TrashCanIcon";
+import TagIcon from "@/components/shared/svg/TagIcon";
 
 export default {
   name: "FileRow",
-  components: { FolderIcon, TrashCanIcon },
+  components: { FolderIcon, TrashCanIcon, TagIcon },
   props: ["file", "status", "active", "isLastSeen"],
 
   data() {
@@ -60,6 +69,10 @@ export default {
       this.$emit("openFileMoveMenu", this.file);
     },
 
+    openFileTagsMenu() {
+      this.$emit("openFileTagsMenu", this.file);
+    },
+
     deleteFile() {
       this.$emit("deleteFile");
     },
@@ -72,6 +85,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.tags {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.tag-chip {
+  background-color: #333;
+  color: #dfdfdf;
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  font-size: 0.75rem;
+}
+
 .file-row {
   display: flex;
   align-items: center;

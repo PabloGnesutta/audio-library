@@ -14,6 +14,7 @@ const FileSchema = new Schema({
   },
   folderId: Number,
   metaData: Object,
+  tags: { type: [String], default: [] },
 
   lastInteraction: Date
 });

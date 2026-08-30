@@ -35,6 +35,15 @@ export default {
     arbol: (state) => state.arbol,
     folders: (state) => state.folders,
     currentFolder: (state) => state.currentFolder,
+    allTags: (state) => {
+      const tags = new Set();
+      state.arbol.forEach((item) => {
+        item.files.forEach((file) => {
+          (file.tags || []).forEach((tag) => tags.add(tag));
+        });
+      });
+      return [...tags].sort();
+    },
   },
 
   mutations: {
