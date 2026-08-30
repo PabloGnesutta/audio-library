@@ -31,6 +31,7 @@
                 :start-at="currentFile.metaData.currentTime"
                 :bookmarks="bookmarks"
                 @updateCurrentTime="updateCurrentTime"
+                @fileCompleted="onFileCompleted"
                 @verAnterior="selectPrevious"
                 @verSiguiente="selectNext"
               />
@@ -163,6 +164,15 @@ export default {
       if (refreshCache) {
         delete this.filesAudioUrlCache[this.currentFile._id];
         this.getFileUrl(this.currentFile);
+      }
+    },
+
+    async onFileCompleted() {
+      try {
+        await FileController.updateFile(this.currentFile._id, 'completed', true);
+        this.currentFile.completed = true;
+      } catch (_err) {
+        this.toastError(_err);
       }
     },
 

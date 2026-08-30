@@ -387,6 +387,7 @@ export default {
         "updateCurrentTime",
         (() => (updateTime <= 0 ? 0 : updateTime))()
       );
+      this.$emit("fileCompleted");
 
       setTimeout(() => {
         this.selectNext(true);

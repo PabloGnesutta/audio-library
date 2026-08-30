@@ -93,16 +93,21 @@ class FileService {
     }
   }
 
-  static markLastFileSeen(user, fileId, folderId) {
+  static async markLastFileSeen(user, fileId, folderId) {
     try {
       const folderIndex = user.folders.findIndex(c => c.id == folderId);
+      if (folderIndex === -1) return;
       user.folders[folderIndex].lastFileSeen = fileId;
       user.lastFileSeen = fileId;
       user.lastFolderSeen = folderId;
       user.markModified("folders");
-      user.save();
+      await user.save();
     } catch (_err) {
-      throw _err;
+      // Fire-and-forget bookkeeping from the caller's perspective -- a
+      // failure here (e.g. a VersionError from a racing concurrent save)
+      // must not crash the request or the process; the URL was already
+      // returned to the client regardless of this write's outcome.
+      console.error('markLastFileSeen failed', _err);
     }
   }
 

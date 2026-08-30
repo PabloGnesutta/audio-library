@@ -12,7 +12,14 @@
             v-model="selected"
             @change="toggleFileSelected()"
         /></span>
-        <span class="flex-1 file-name" @click="openFile()">
+        <span
+          class="flex-1 file-name"
+          :class="{ completed: file.completed }"
+          @click="openFile()"
+        >
+          <span v-if="file.completed" class="completed-icon"
+            ><CheckIcon width="12"
+          /></span>
           <span>{{ file.name }}</span>
           <span v-if="file.tags && file.tags.length" class="tags ml-1">
             <span v-for="tag in file.tags" :key="tag" class="tag-chip">{{
@@ -46,10 +53,11 @@
 import FolderIcon from "@/components/shared/svg/FolderIcon";
 import TrashCanIcon from "@/components/shared/svg/TrashCanIcon";
 import TagIcon from "@/components/shared/svg/TagIcon";
+import CheckIcon from "@/components/shared/svg/CheckIcon";
 
 export default {
   name: "FileRow",
-  components: { FolderIcon, TrashCanIcon, TagIcon },
+  components: { FolderIcon, TrashCanIcon, TagIcon, CheckIcon },
   props: ["file", "status", "active", "isLastSeen"],
 
   data() {
@@ -88,6 +96,17 @@ export default {
 .tags {
   display: inline-flex;
   gap: 0.25rem;
+}
+
+.file-name.completed {
+  opacity: 0.55;
+}
+
+.completed-icon {
+  display: inline-flex;
+  color: var(--color-3);
+  margin-right: 0.35rem;
+  vertical-align: middle;
 }
 
 .tag-chip {

@@ -6,11 +6,9 @@
   --color-1: #facf5a;
   --color-3: #49beb7;
   --color-4: #042c2a;
-  --color-header: #ff5959;
-  --color-progress-bar: #ff5959;
+  --color-progress-bar: var(--color-2);
   --color-text: #f3f3f3;
   --color-text-dark: #333;
-  --btn-primary-bg: var(--color-4);
   --btn-secondary-bg: #333;
   --btn-secondary-hover-bg: rgba(0, 0, 0, 0.2);
 }
