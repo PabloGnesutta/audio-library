@@ -188,6 +188,7 @@ export default {
 <style lang="scss" scoped>
 .login {
   height: calc(100vh - var(--header-height));
+  height: calc(100dvh - var(--header-height));
   width: 100vw;
   display: flex;
   justify-content: center;

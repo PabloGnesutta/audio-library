@@ -73,7 +73,7 @@ export default {
 }
 
 .input {
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   display: flex;
   justify-content: space-between;
   background: #333;
@@ -91,8 +91,8 @@ export default {
   max-height: 300px;
   overflow-y: auto;
   transform: translateY(4px);
-  border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
   .item {
     padding: 0.5rem 1rem;
     cursor: pointer;

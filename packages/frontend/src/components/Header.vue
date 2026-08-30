@@ -85,21 +85,23 @@ export default {
 .header-inner {
   background: black;
   z-index: 22;
+  height: var(--header-height);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .logo {
   cursor: default;
   user-select: none;
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--color-1-dark);
   padding: 1rem 2rem;
-  font-family: "Times New Roman", Times, serif;
   transition: color 300ms ease-out;
   .highlight {
-    font-style: italic;
+    font-weight: 600;
     transition: color 300ms ease-out;
-    text-decoration: underline;
     color: var(--color-1);
   }
   &:hover {
@@ -125,6 +127,7 @@ export default {
   right: 0;
   overflow: hidden;
   background: var(--color-4);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
   z-index: 21;
   transform: translate(0, -100%);
   transition: transform 0.2s ease-out;
@@ -132,7 +135,7 @@ export default {
 
 .dropdown-menu.desplegado {
   transform: translate(0, 100%);
-  box-shadow: 1px -1px 3px 2px #221e1e;
+  box-shadow: var(--shadow-md);
 }
 
 .dropdown-item {

@@ -503,6 +503,9 @@ export default {
   padding-bottom: 5em;
   overflow-y: scroll;
   height: calc(100vh - var(--header-height) - var(--tree-header-height));
+  height: calc(
+    100dvh - var(--header-height) - var(--tree-header-height)
+  );
   &::-webkit-scrollbar {
     width: 12px;
     height: 0;
@@ -546,6 +549,7 @@ export default {
   padding: 1.5rem 1rem;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  box-shadow: var(--shadow-md);
   transition: transform 250ms ease-out;
   transform: translateY(100%);
   &.visible {

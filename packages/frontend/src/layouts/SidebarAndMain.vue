@@ -75,6 +75,7 @@ export default {
   overflow-x: hidden;
   white-space: nowrap;
   height: calc(100vh - var(--header-height));
+  height: calc(100dvh - var(--header-height));
   overflow-y: hidden;
   background: #020202;
 }
@@ -106,6 +107,7 @@ export default {
 .avoid-overflow-mobile {
   overflow-y: hidden;
   max-height: calc(100vh - var(--header-height));
+  max-height: calc(100dvh - var(--header-height));
 }
 
 @media (min-width: 700px) {

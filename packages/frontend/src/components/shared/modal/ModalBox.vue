@@ -56,17 +56,18 @@ export default {
 .backdrop {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   background: rgba(0, 0, 0, 0.65);
 }
 
 .backdrop-content {
   background: var(--color-4);
   color: var(--color-text);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.08);
   width: 90%;
   white-space: normal;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  box-shadow: var(--shadow-lg);
   padding: 1.75rem;
 }
 

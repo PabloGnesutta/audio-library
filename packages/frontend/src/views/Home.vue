@@ -279,6 +279,7 @@ export default {
 
 .main-wrapper {
   min-height: calc(100vh - var(--header-height));
+  min-height: calc(100dvh - var(--header-height));
   &.dragging-over .dropzone-wrapper {
     visibility: visible;
     opacity: 1;
@@ -304,6 +305,7 @@ export default {
   left: 0;
   width: 100%;
   height: calc(100vh - var(--header-height));
+  height: calc(100dvh - var(--header-height));
   background: rgba(0, 0, 0, 1);
   z-index: 15;
   visibility: hidden;
@@ -312,6 +314,7 @@ export default {
   .dropzone {
     width: 100%;
     height: calc(90vh - var(--header-height));
+    height: calc(90dvh - var(--header-height));
     border: 3px dashed #8af2e2;
     pointer-events: none;
     font-size: 2rem;
