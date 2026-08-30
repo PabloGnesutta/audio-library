@@ -18,10 +18,10 @@ class AuthService {
       const responseUser = await UserHelper.saveUser(user);
       if (!responseUser) throw new BusinessError('Unable to save user');
 
-      // EmailService.sendVerifyEmailMail({
-      //   to: user.email,
-      //   token: user.emailToken,
-      // });
+      EmailService.sendVerifyEmailMail({
+        to: user.email,
+        token: user.emailToken,
+      });
       return responseUser;
     } catch (_err) {
       throw _err;
