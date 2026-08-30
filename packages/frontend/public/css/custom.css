@@ -1,0 +1,61 @@
+body {
+  background-color: var(--body-bg);
+  color: #f3f3f3;
+}
+
+/* Button */
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 1em;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease-out;
+  border: 2px solid transparent;
+}
+
+.btn:focus {
+  outline: none;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.btn.disabled,
+.btn:disabled,
+input:disabled,
+input.disabled {
+  cursor: default;
+}
+
+/* Primary */
+
+.btn-primary {
+  color: white;
+  font-weight: bold;
+  background-color: var(--color-3);
+}
+
+.btn-primary:not(:disabled):not(.disabled):hover {
+  background-color: teal;
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+  background: #959595;
+  color: #eeeeee;
+}
+
+/* Secondary */
+
+.btn-secondary {
+  color: var(--color-1);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: var(--btn-secondary-bg);
+  transition: border-color 0.2s ease-out, background-color 0.2s ease-out;
+}
+
+.btn-secondary:not(:disabled):not(.disabled):hover {
+  border-color: var(--color-1);
+  background-color: var(--btn-secondary-hover-bg);
+}
