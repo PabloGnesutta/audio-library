@@ -23,7 +23,7 @@ export default defineConfig({
   },
   build: {
     // The backend serves the built SPA straight out of this directory.
-    outDir: '../audiolibrary-backend/__client-app-build',
+    outDir: '../backend/__client-app-build',
     emptyOutDir: true,
   },
   test: {

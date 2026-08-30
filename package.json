@@ -1,0 +1,21 @@
+{
+  "name": "audiolibrary",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,green \"npm run serve -w packages/backend\" \"npm run serve -w packages/frontend\"",
+    "build": "npm run build -w packages/frontend",
+    "start": "npm start -w packages/backend",
+    "test": "npm test -w packages/backend && npm test -w packages/frontend"
+  },
+  "author": "Pablo Gnesutta",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
