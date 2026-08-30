@@ -92,7 +92,7 @@ export default {
   user-select: none;
   font-size: 1.5rem;
   font-weight: bold;
-  color: #9d7c11;
+  color: var(--color-1-dark);
   padding: 1rem 2rem;
   font-family: "Times New Roman", Times, serif;
   transition: color 300ms ease-out;
@@ -100,13 +100,12 @@ export default {
     font-style: italic;
     transition: color 300ms ease-out;
     text-decoration: underline;
-    color: #ffac0d;
+    color: var(--color-1);
   }
   &:hover {
-    color: #ffac0d;
+    color: var(--color-1);
     .highlight {
-      // color: #ffc456;
-      color: #9d7c11;
+      color: var(--color-1-dark);
     }
   }
 }

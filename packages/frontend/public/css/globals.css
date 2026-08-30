@@ -2,9 +2,10 @@
   --header-height: 66px;
   --body-bg: #333;
   --color-texto: #333;
-  --color-2: #ff5959;
-  --color-1: #facf5a;
-  --color-3: #49beb7;
+  --color-2: #ff6b5b;
+  --color-1: #e8b84b;
+  --color-1-dark: #a9822e;
+  --color-3: #45c4b0;
   --color-4: #042c2a;
   --color-progress-bar: var(--color-2);
   --color-text: #f3f3f3;
