@@ -110,6 +110,7 @@ import FolderSelect from '@/components/shared/inputs/FolderSelect';
 const maxFileSize = 2 * 1000000000; // Gb
 const maxFileSizeStr = maxFileSize / 1000000000 + 'Gb';
 const validMimetypes = ['mp3', 'wav', 'mpeg'];
+const maxFilesPerUpload = 100; // keep in sync with backend's config.maxFilesPerUpload
 
 export default {
   name: 'FileUpload',
@@ -154,8 +155,15 @@ export default {
       setFilesTargetFolder: 'fileUpload/setFilesTargetFolder',
     }),
 
-    uploadFiles() {
+    async uploadFiles() {
       if (this.noFileSelected || this.uploading) {
+        return;
+      }
+      if (this.files.length > maxFilesPerUpload) {
+        this.pushToast({
+          msg: `You can upload up to ${maxFilesPerUpload} files at once (${this.files.length} selected)`,
+          success: false,
+        });
         return;
       }
       this.numFilesToUpload = this.files.length;
@@ -165,23 +173,36 @@ export default {
       const treeIndex = this.tree.findIndex(
         (item) => item.folder.id == folderId
       );
-      for (let file of this.files) {
+
+      let uploadUrls;
+      try {
+        // One batched call for every file's signed URL, instead of one
+        // request per file before any of them can start uploading.
+        const { data } = await FileController.getUploadUrls(this.files);
+        uploadUrls = data.urls;
+      } catch (_err) {
+        this.toastError(_err);
+        this.uploading = false;
+        return;
+      }
+
+      this.files.forEach((file, i) => {
         // todo: compute duration
-        const url = URL.createObjectURL(file);
-        const audio = new Audio(url);
+        const objectUrl = URL.createObjectURL(file);
+        const audio = new Audio(objectUrl);
         audio.ondurationchange = (e) => {
           var duration = e.target.duration;
           if (duration == Infinity) {
             duration = 0;
           }
-          this.queueUpload(file, folderId, treeIndex, duration);
+          this.queueUpload(file, folderId, treeIndex, duration, uploadUrls[i]);
         };
-      }
+      });
 
       this.toggleMinimize();
     },
 
-    async queueUpload(file, folderId, treeIndex, duration) {
+    async queueUpload(file, folderId, treeIndex, duration, uploadInfo) {
       this.filesStatus[file.size] = 'uploading';
       const config = this.progressConfig(file);
       try {
@@ -189,7 +210,8 @@ export default {
           file,
           config,
           folderId,
-          duration
+          duration,
+          uploadInfo
         );
         this.uploadedFiles++;
         this.onFileUploaded(data.file, treeIndex);

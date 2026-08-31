@@ -3,6 +3,7 @@ const maxFileSize = 0.5 * gb;
 const cofig = {
   maxFileSize,
   maxFileSizeStr: (maxFileSize / gb) + "Gb",
+  maxFilesPerUpload: 100,
   accessTokenExpiration: '1d',
   refreshTokenExpiration: '365d',
   emailTokenExpirationInMs: 1 * 60 * 60 * 1000, //1h

@@ -5,7 +5,8 @@ const fileController = require('../controllers/file-controller');
 router.post('/:_id/url', fileController.getFileUrl);
 router.get('/folder/:folderId', fileController.getFilesForFolder);
 router.get('/search', fileController.searchFiles);
-router.post('/', fileController.postFile);
+router.post('/upload-urls', fileController.getUploadUrls);
+router.post('/confirm', fileController.confirmUpload);
 router.put('/', fileController.updateFile); //should be /:id
 
 router.delete('/:_id', fileController.deleteFile);

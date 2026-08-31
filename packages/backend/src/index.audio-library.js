@@ -7,8 +7,7 @@ const express = require('express'),
   helmet = require('helmet'),
   app = express(),
   publicPath = path.join(__dirname, '../', '__client-app-build'),
-  { connect } = require('mongoose'),
-  fileUpload = require('express-fileupload');
+  { connect } = require('mongoose');
 
 // CSP is left off: the audio player streams from an external R2 origin and,
 // in dev, the frontend calls this API cross-origin -- helmet's default CSP
@@ -16,7 +15,6 @@ const express = require('express'),
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 app.use(express.static(publicPath));
-app.use(fileUpload());
 app.use(express.json());
 
 const { authorizationMiddleware } = require('./controllers/auth-controller');

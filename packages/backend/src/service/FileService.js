@@ -18,25 +18,28 @@ class FileService {
     return { url };
   }
 
-  static async uploadFile(user, file, { folderId, duration }) {
-    if (file.size > config.maxFileSize) throw new BusinesError(`${file.name} is too large`);
+  static async getUploadUrls(user, { files }) {
+    if (files.length > config.maxFilesPerUpload) {
+      throw new BusinesError(`You can upload up to ${config.maxFilesPerUpload} files at once`);
+    }
 
+    const ts = Date.now();
 
-    const params = {
-      Key: `audio-library/${user.email}/${file.name}__ts--${Date.now()}`,
-      Body: file.data,
-      ContentType: file.mimetype
-    };
-
-    // Storage
     // todo: check total storage used by user, duplicate file names?
-    const s3Response = await S3Helper.uploadDataToBucket(params);
-    if (!s3Response) throw new BusinesError("Error while uploading file");
+    return Promise.all(files.map(async ({ fileName, fileType, fileSize }, i) => {
+      if (fileSize > config.maxFileSize) throw new BusinesError(`${fileName} is too large`);
 
-    // DB
-    const key = s3Response.key || s3Response.Key;
-    // - file
-    const savedFile = await FileHelper.saveFile(FileFactory.fileObject({ file, key, user, folderId, duration }));
+      const key = `audio-library/${user.email}/${fileName}__ts--${ts}-${i}`;
+      const url = await S3Helper.getSignedUrl('putObject', { Key: key, ContentType: fileType, Expires: 3600 });
+
+      return { fileName, url, key };
+    }));
+  }
+
+  static async confirmUpload(user, { key, folderId, duration, fileName, fileType, fileSize }) {
+    const savedFile = await FileHelper.saveFile(
+      FileFactory.fileObject({ name: fileName, type: fileType, size: fileSize, key, user, folderId, duration })
+    );
     if (!savedFile) throw new BusinesError("Error while updating file");
 
     return { file: savedFile };

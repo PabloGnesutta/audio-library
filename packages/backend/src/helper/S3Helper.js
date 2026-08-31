@@ -1,6 +1,5 @@
 const { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-const { Upload } = require('@aws-sdk/lib-storage');
 
 // esta instanciacion podria estar encapsulada en un StorageFactory para abstraernos del provedor
 const audioLibraryBucket = process.env.R2_BUCKET_NAME;
@@ -15,15 +14,10 @@ const s3 = new S3Client({
 
 const COMMANDS = {
   getObject: GetObjectCommand,
+  putObject: PutObjectCommand,
 };
 
 class AmazonS3Helper {
-  static uploadDataToBucket(params) {
-    params.Bucket = audioLibraryBucket;
-    const upload = new Upload({ client: s3, params });
-    return upload.done();
-  }
-
   static deleteFile(params) {
     params.Bucket = audioLibraryBucket;
     return s3.send(new DeleteObjectCommand(params));

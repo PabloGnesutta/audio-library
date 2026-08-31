@@ -1,13 +1,13 @@
 const File = require('../model/File');
 
 class FileFactory {
-  static fileObject({ file, key, user, folderId, duration }) {
+  static fileObject({ name, type, size, key, user, folderId, duration }) {
     return new File({
       key,
       duration,
-      name: file.name,
-      type: file.mimetype,
-      size: file.size,
+      name,
+      type,
+      size,
       owner: user,
       folderId: folderId || 0,
       metaData: {

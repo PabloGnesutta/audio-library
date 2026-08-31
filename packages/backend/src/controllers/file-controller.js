@@ -15,13 +15,23 @@ exports.getFileUrl = async (req, res, next) => {
   }
 };
 
-exports.postFile = async (req, res, next) => {
-  console.log('postFile', req.body.folderId, req.files.file);
+exports.getUploadUrls = async (req, res, next) => {
+  console.log('getUploadUrls', req.body.files?.length);
   try {
-    const { file } = await FileService.uploadFile(req.user, req.files.file, req.body);
+    const urls = await FileService.getUploadUrls(req.user, req.body);
+    res.json({ urls });
+  } catch (_err) {
+    next(ErrorFactory.create(_err, 'Error while getting upload urls'));
+  }
+};
+
+exports.confirmUpload = async (req, res, next) => {
+  console.log('confirmUpload', req.body);
+  try {
+    const { file } = await FileService.confirmUpload(req.user, req.body);
     res.json({ file });
   } catch (_err) {
-    next(ErrorFactory.create(_err, 'Error while uploading file'));
+    next(ErrorFactory.create(_err, 'Error while confirming upload'));
   }
 };
 

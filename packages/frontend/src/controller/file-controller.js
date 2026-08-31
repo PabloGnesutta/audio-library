@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Config from '../config';
 import BaseController from "@/controller/base-controller";
 
 
@@ -16,22 +15,37 @@ class FileController extends BaseController {
     return this.get('/file/search', { q: query });
   }
 
-  static uploadFile(file, config, folderId, duration) {
-    // Do not set Content-Type manually: the browser needs to add its own
-    // multipart boundary when sending a FormData body. A hardcoded
-    // "multipart/form-data" here has no boundary param, which fails
-    // express-fileupload's content-type check server-side (it requires
-    // "boundary=" to even treat the request as a file upload) and the
-    // request silently falls through with req.files left undefined.
-    config.headers = {
-      Authorization: "Bearer " + localStorage.getItem("accessToken"),
-    };
+  // One call for the whole batch instead of one per file -- avoids N round
+  // trips before any file can start uploading.
+  static getUploadUrls(files) {
+    return this.post('/file/upload-urls', {
+      files: files.map((file) => ({
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+      })),
+    });
+  }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folderId", folderId);
-    formData.append("duration", duration);
-    return axios.post(`${Config.BACKEND_API_URL}/file`, formData, config);
+  static async uploadFile(file, config, folderId, duration, { url, key }) {
+    // Direct PUT to the R2 presigned URL -- do not route this through the
+    // app's `transport` instance: it injects our own Authorization bearer
+    // token and withCredentials, neither of which R2 expects (the signed
+    // URL carries its own auth), and an unexpected header here can fail
+    // signature validation.
+    await axios.put(url, file, {
+      headers: { 'Content-Type': file.type },
+      onUploadProgress: config.onUploadProgress,
+    });
+
+    return this.post('/file/confirm', {
+      key,
+      folderId,
+      duration,
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+    });
   }
 
   static updateFile(_id, param, value) {
