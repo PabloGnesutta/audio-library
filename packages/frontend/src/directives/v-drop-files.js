@@ -2,7 +2,7 @@ import store from '@/store';
 import eventBus from '@/plugins/event-bus';
 
 export default {
-  inserted(el, binding) {
+  mounted(el, binding) {
     const targetFolder = binding.value.folder;
 
     el.addEventListener('dragover', (e) => {
@@ -17,6 +17,11 @@ export default {
 
     el.addEventListener('drop', (e) => {
       e.preventDefault();
+      // Stop the drop from bubbling to an ancestor's own v-drop-files (e.g.
+      // dropping on a FolderRow inside .folders-container, which also has
+      // the directive) -- otherwise both handlers fire for one drop and the
+      // ancestor's overwrites the more specific target folder just set.
+      e.stopPropagation();
       onDrop(e, targetFolder);
     });
   },

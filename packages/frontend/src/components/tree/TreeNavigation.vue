@@ -43,7 +43,7 @@
     <SharedWithMe @openSharedFile="onOpenSharedFile" />
 
     <!-- FOLDERS -->
-    <div class="folders-container">
+    <div class="folders-container" v-drop-files="{ folder: currentFolder }">
       <div
         class="folder-row-wrapper"
         v-for="(item, treeIndex) in _tree"
@@ -539,6 +539,10 @@ export default {
   position: relative;
   padding-bottom: 5em;
   overflow-y: scroll;
+  &.dragging-over {
+    outline: 2px dashed #dedede;
+    outline-offset: -2px;
+  }
   height: calc(100vh - var(--header-height) - var(--tree-header-height));
   height: calc(
     100dvh - var(--header-height) - var(--tree-header-height)
