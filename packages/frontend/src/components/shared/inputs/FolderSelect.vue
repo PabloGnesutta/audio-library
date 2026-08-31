@@ -2,8 +2,8 @@
   <div class="folder-select">
     <label class="base-label"> {{ label }}</label>
 
-    <div v-if="value" class="input" @click="toggleDropdown">
-      <span> {{ value.name }} </span>
+    <div v-if="modelValue" class="input" @click="toggleDropdown">
+      <span> {{ modelValue.name }} </span>
       <ChevronDownIcon width="20" />
     </div>
     <div v-if="showDropdown" class="dropdown">
@@ -27,9 +27,11 @@ export default {
   name: "FolderSelect",
   components: { ChevronDownIcon },
   props: {
-    value: { type: Object, default: null },
+    modelValue: { type: Object, default: null },
     label: { type: String, default: "Select a folder" },
   },
+
+  emits: ["update:modelValue"],
 
   computed: {
     ...mapGetters({
@@ -44,15 +46,14 @@ export default {
   },
 
   mounted() {
-    if (!this.value) {
+    if (!this.modelValue) {
       this.selectFolder(this.folders[0]);
     }
   },
 
   methods: {
     selectFolder(folder) {
-      this.selectedFolder = folder;
-      this.$emit("input", folder);
+      this.$emit("update:modelValue", folder);
       this.closeDropdown();
     },
 
