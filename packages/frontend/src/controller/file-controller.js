@@ -17,8 +17,13 @@ class FileController extends BaseController {
   }
 
   static uploadFile(file, config, folderId, duration) {
+    // Do not set Content-Type manually: the browser needs to add its own
+    // multipart boundary when sending a FormData body. A hardcoded
+    // "multipart/form-data" here has no boundary param, which fails
+    // express-fileupload's content-type check server-side (it requires
+    // "boundary=" to even treat the request as a file upload) and the
+    // request silently falls through with req.files left undefined.
     config.headers = {
-      "Content-Type": "multipart/form-data",
       Authorization: "Bearer " + localStorage.getItem("accessToken"),
     };
 
