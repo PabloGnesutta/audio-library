@@ -28,10 +28,45 @@ function mountPlayer() {
 
 beforeEach(() => {
   vi.useFakeTimers();
+  localStorage.clear();
 });
 
 afterEach(() => {
   vi.useRealTimers();
+});
+
+describe('AudioPlayer playback rate memory', () => {
+  test('init() restores the last-used rate from localStorage', () => {
+    localStorage.setItem('playbackRate', '1.5');
+    const wrapper = mountPlayer();
+
+    wrapper.vm.init();
+
+    expect(wrapper.vm.playbackRate).toBe(1.5);
+  });
+
+  test('init() defaults to 1x when nothing is stored', () => {
+    const wrapper = mountPlayer();
+
+    wrapper.vm.init();
+
+    expect(wrapper.vm.playbackRate).toBe(1);
+  });
+
+  test('speedUp/speedDown/resetPlaybackRate persist the new rate', () => {
+    const wrapper = mountPlayer();
+    wrapper.vm.AP = { playbackRate: 1 };
+
+    wrapper.vm.speedUp();
+    expect(localStorage.getItem('playbackRate')).toBe('1.25');
+
+    wrapper.vm.speedDown();
+    wrapper.vm.speedDown();
+    expect(localStorage.getItem('playbackRate')).toBe('0.75');
+
+    wrapper.vm.resetPlaybackRate();
+    expect(localStorage.getItem('playbackRate')).toBe('1');
+  });
 });
 
 describe('AudioPlayer sleep timer', () => {

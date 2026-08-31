@@ -163,7 +163,11 @@
 import { mapGetters, mapMutations } from "vuex";
 import eventBus from "@/plugins/event-bus";
 import Helpers from "@/helpers/helper-functions";
-import { getAutoplayEnabled } from "@/helpers/preferences";
+import {
+  getAutoplayEnabled,
+  getPlaybackRate,
+  setPlaybackRate,
+} from "@/helpers/preferences";
 import PlaybackRateSelect from "@/components/audio-player/PlaybackRateSelect";
 import ModalBox from "@/components/shared/modal/ModalBox";
 import RewindIcon from "@/components/shared/svg/RewindIcon.vue";
@@ -263,7 +267,7 @@ export default {
       this.AP = null;
       this.loadedData = false;
       this.pendingAutoplay = autoplay;
-      this.playbackRate = 1;
+      this.playbackRate = getPlaybackRate();
       this.progressBarFillPercentage = 0;
       this.progressBarBufferedPercentage = 0;
 
@@ -435,17 +439,20 @@ export default {
       if (this.playbackRate < 4) {
         this.playbackRate += 0.25;
         this.AP.playbackRate = this.playbackRate;
+        setPlaybackRate(this.playbackRate);
       }
     },
     speedDown() {
       if (this.playbackRate > 0.25) {
         this.playbackRate -= 0.25;
         this.AP.playbackRate = this.playbackRate;
+        setPlaybackRate(this.playbackRate);
       }
     },
     resetPlaybackRate() {
       this.playbackRate = 1;
       this.AP.playbackRate = this.playbackRate;
+      setPlaybackRate(this.playbackRate);
     },
 
     // Sleep Timer

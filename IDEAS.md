@@ -4,11 +4,12 @@ Sort by name/duration in each folder (preserved per device?) Should sort be done
 
 multiple-file-actions some times doesn't unfold all the way and you can see only a small part of the upper border, making it unusable because the action butons are not visible
 
+remove actions from all rows, keep the actions only visible when selecting one or more files
+
 LESS PRIORITY:
 
 Playback & listening experience
 
-Playback speed memory — persist last-used rate per file or globally (you already have PlaybackRateSelect.vue), so it doesn't reset to 1x every load.
 
 Keyboard shortcuts (space=play/pause, arrows=seek/volume) — you already have forward/backward/volume icons, just needs bindings.
 
