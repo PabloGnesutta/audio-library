@@ -73,20 +73,22 @@ describe('FileRow', () => {
     expect(wrapper.emitted('openFile')).toBeFalsy();
   });
 
-  test('the action icons emit their events with the file', async () => {
-    const file = makeFile();
-    const wrapper = mount(FileRow, { props: { file } });
+  test('shows a single disabled edit placeholder and no per-row action icons', async () => {
+    const wrapper = mount(FileRow, { props: { file: makeFile() } });
     const icons = wrapper.findAll('.right .icon');
 
-    await icons[0].trigger('click'); // tags
-    await icons[1].trigger('click'); // move
-    await icons[2].trigger('click'); // share
-    await icons[3].trigger('click'); // delete
+    expect(icons).toHaveLength(1);
+    expect(icons[0].classes()).toContain('disabled');
+    expect(wrapper.emitted('openFileTagsMenu')).toBeFalsy();
+    expect(wrapper.emitted('openFileMoveMenu')).toBeFalsy();
+    expect(wrapper.emitted('openFileShareMenu')).toBeFalsy();
+    expect(wrapper.emitted('deleteFile')).toBeFalsy();
 
-    expect(wrapper.emitted('openFileTagsMenu')[0]).toEqual([file]);
-    expect(wrapper.emitted('openFileMoveMenu')[0]).toEqual([file]);
-    expect(wrapper.emitted('openFileShareMenu')[0]).toEqual([file]);
-    expect(wrapper.emitted('deleteFile')).toBeTruthy();
+    await icons[0].trigger('click');
+    expect(wrapper.emitted('openFileTagsMenu')).toBeFalsy();
+    expect(wrapper.emitted('openFileMoveMenu')).toBeFalsy();
+    expect(wrapper.emitted('openFileShareMenu')).toBeFalsy();
+    expect(wrapper.emitted('deleteFile')).toBeFalsy();
   });
 
   test('hides the checkbox and action icons while a delete/move is in flight', () => {

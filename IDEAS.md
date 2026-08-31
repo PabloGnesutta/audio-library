@@ -2,14 +2,12 @@ TOP PRIORITY:
 
 Sort by name/duration in each folder (preserved per device?) Should sort be done on frontend or backend?
 
-multiple-file-actions some times doesn't unfold all the way and you can see only a small part of the upper border, making it unusable because the action butons are not visible
 
-remove actions from all rows, keep the actions only visible when selecting one or more files
 
 LESS PRIORITY:
 
-Playback & listening experience
 
+Playback & listening experience
 
 Keyboard shortcuts (space=play/pause, arrows=seek/volume) — you already have forward/backward/volume icons, just needs bindings.
 

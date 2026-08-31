@@ -79,10 +79,6 @@
               :status="filesStatus[file._id]"
               :selected="isFileSelected(file)"
               @openFile="openFileWithIndexes(treeIndex, fileIndex)"
-              @openFileMoveMenu="openFileMoveMenu"
-              @openFileTagsMenu="openFileTagsMenu"
-              @openFileShareMenu="openFileShareMenu"
-              @deleteFile="deleteFile(file)"
               @toggleFileSelected="toggleFileSelected(file, $event)"
             />
           </div>
@@ -102,7 +98,7 @@
       ref="tagsModal"
       @tagsAppliedToMultipleFiles="onTagsAppliedToMultipleFiles"
     />
-    <ShareModal ref="shareModal" />
+    <ShareModal ref="shareModal" @multipleFilesShared="onMultipleFilesShared" />
     <BookmarkSearchModal
       ref="bookmarkSearch"
       @bookmarkSelected="goToBookmarkSearchResult"
@@ -127,6 +123,9 @@
         </span>
         <span class="icon" @click="openMoveMultipleFilesMenu">
           <FolderIcon width="26" />
+        </span>
+        <span class="icon" @click="openShareMultipleFilesMenu">
+          <ShareIcon width="26" />
         </span>
         <span class="icon" @click="deleteMultipleFiles">
           <TrashIcon width="26" />
@@ -171,6 +170,7 @@ import TrashIcon from '@/components/shared/svg/TrashIcon';
 import TagIcon from '@/components/shared/svg/TagIcon';
 import CheckIcon from '@/components/shared/svg/CheckIcon';
 import SearchIcon from '@/components/shared/svg/SearchIcon';
+import ShareIcon from '@/components/shared/svg/ShareIcon';
 
 export default {
   name: 'TreeNavigation',
@@ -196,6 +196,7 @@ export default {
     TagIcon,
     CheckIcon,
     SearchIcon,
+    ShareIcon,
   },
   data() {
     return {
@@ -318,18 +319,6 @@ export default {
       }
     },
 
-    openFileMoveMenu(file) {
-      this.$refs.moveFiles.promptMoveFile(file);
-    },
-
-    openFileTagsMenu(file) {
-      this.$refs.tagsModal.promptEditTags(file);
-    },
-
-    openFileShareMenu(file) {
-      this.$refs.shareModal.promptShareFile(file);
-    },
-
     openFolderShareMenu(folder) {
       this.$refs.shareModal.promptShareFolder(folder);
     },
@@ -379,6 +368,13 @@ export default {
       this.$refs.tagsModal.promptEditTagsForMultipleFiles(this.selectedFiles);
     },
     onTagsAppliedToMultipleFiles() {
+      this.selectedFiles = [];
+    },
+
+    openShareMultipleFilesMenu() {
+      this.$refs.shareModal.promptShareMultipleFiles(this.selectedFiles);
+    },
+    onMultipleFilesShared() {
       this.selectedFiles = [];
     },
 

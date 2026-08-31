@@ -35,17 +35,8 @@
       v-if="status !== 'deleting' && status !== 'moving' && status !== null"
       class="right flex ml-2"
     >
-      <span class="icon pointer mr-1" @click="openFileTagsMenu()">
-        <TagIcon width="18" />
-      </span>
-      <span class="icon pointer mr-1" @click="openFileMoveMenu()">
-        <FolderIcon width="20" />
-      </span>
-      <span class="icon pointer mr-1" @click="openFileShareMenu()">
-        <ShareIcon width="18" />
-      </span>
-      <span class="icon pointer" @click="deleteFile()">
-        <TrashCanIcon width="20" />
+      <span class="icon disabled" title="Rename (coming soon)">
+        <PenIcon width="16" />
       </span>
     </span>
     <span v-else>{{ status }}</span>
@@ -53,15 +44,12 @@
 </template>
 
 <script>
-import FolderIcon from "@/components/shared/svg/FolderIcon";
-import TrashCanIcon from "@/components/shared/svg/TrashCanIcon";
-import TagIcon from "@/components/shared/svg/TagIcon";
+import PenIcon from "@/components/shared/svg/PenIcon";
 import CheckIcon from "@/components/shared/svg/CheckIcon";
-import ShareIcon from "@/components/shared/svg/ShareIcon";
 
 export default {
   name: "FileRow",
-  components: { FolderIcon, TrashCanIcon, TagIcon, CheckIcon, ShareIcon },
+  components: { PenIcon, CheckIcon },
   props: ["file", "status", "active", "isLastSeen", "selected"],
 
   methods: {
@@ -69,22 +57,6 @@ export default {
       if (!this.active && this.status !== "deleting") {
         this.$emit("openFile");
       }
-    },
-
-    openFileMoveMenu() {
-      this.$emit("openFileMoveMenu", this.file);
-    },
-
-    openFileTagsMenu() {
-      this.$emit("openFileTagsMenu", this.file);
-    },
-
-    openFileShareMenu() {
-      this.$emit("openFileShareMenu", this.file);
-    },
-
-    deleteFile() {
-      this.$emit("deleteFile");
     },
 
     toggleFileSelected(selected) {
@@ -181,5 +153,10 @@ input[type="checkbox"] {
   .icon:hover {
     color: var(--color-2);
   }
+}
+
+.icon.disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 </style>

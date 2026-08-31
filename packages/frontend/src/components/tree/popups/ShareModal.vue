@@ -1,7 +1,12 @@
 <template>
   <ModalBox v-if="open" :title="modalTitle" max-width="446px" @cerrarModal="resetState">
     <div class="share-modal">
-      <p class="resource-name-label">{{ resource && resource.name }}</p>
+      <p v-if="mode !== 'multiple'" class="resource-name-label">{{ resource && resource.name }}</p>
+      <div v-else class="files-list select-none">
+        <div v-for="file in resources" :key="file._id" class="file-row">
+          {{ file.name }}
+        </div>
+      </div>
 
       <div class="share-form flex items-center">
         <input
@@ -16,7 +21,7 @@
         </button>
       </div>
 
-      <div class="shares-list">
+      <div v-if="mode !== 'multiple'" class="shares-list">
         <p v-if="!currentShares.length" class="no-shares select-none">
           Not shared with anyone yet
         </p>
@@ -44,8 +49,9 @@ export default {
     return {
       loading: false,
       open: false,
-      mode: null, // 'file' | 'folder'
+      mode: null, // 'file' | 'folder' | 'multiple'
       resource: null, // the file or folder object being shared
+      resources: [], // files being shared, when mode === 'multiple'
       recipientEmail: '',
     };
   },
@@ -59,7 +65,9 @@ export default {
       return this.resource ? this.sharesForResource(this.mode, id) : [];
     },
     modalTitle() {
-      return this.mode === 'folder' ? 'Share folder' : 'Share file';
+      if (this.mode === 'folder') return 'Share folder';
+      if (this.mode === 'multiple') return `Share ${this.resources.length} files`;
+      return 'Share file';
     },
   },
 
@@ -78,6 +86,12 @@ export default {
     async promptShareFolder(folder) {
       this.mode = 'folder';
       this.resource = folder;
+      await this.openModal();
+    },
+
+    async promptShareMultipleFiles(files) {
+      this.mode = 'multiple';
+      this.resources = files;
       await this.openModal();
     },
 
@@ -105,6 +119,11 @@ export default {
         this.loading = true;
         if (this.mode === 'folder') {
           await ShareController.shareFolder(this.resource.id, email);
+        } else if (this.mode === 'multiple') {
+          await Promise.all(
+            this.resources.map((file) => ShareController.shareFile(file._id, email))
+          );
+          this.$emit('multipleFilesShared');
         } else {
           await ShareController.shareFile(this.resource._id, email);
         }
@@ -130,6 +149,7 @@ export default {
       this.open = false;
       this.mode = null;
       this.resource = null;
+      this.resources = [];
       this.recipientEmail = '';
     },
   },
@@ -145,6 +165,19 @@ export default {
 .resource-name-label {
   margin-bottom: 1rem;
   opacity: 0.8;
+}
+
+.files-list {
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.06);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  .file-row {
+    margin-bottom: 0.5rem;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .share-form {
