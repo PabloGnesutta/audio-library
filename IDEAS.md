@@ -23,7 +23,6 @@ Jump-to-bookmark keyboard nav — you have BookmarkNavigation.vue already; could
 
 Organization
 
-Full-text/file-name search — I didn't see a search box in the tree navigation; even a simple client-side filter over the folder tree would help once the library grows.
 Sort/filter by duration, upload date, last played.
 
 

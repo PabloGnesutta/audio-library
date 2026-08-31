@@ -12,6 +12,10 @@ class FileController extends BaseController {
     return this.get(`/file/folder/${folderId}`);
   }
 
+  static search(query) {
+    return this.get('/file/search', { q: query });
+  }
+
   static uploadFile(file, config, folderId, duration) {
     config.headers = {
       "Content-Type": "multipart/form-data",

@@ -35,6 +35,16 @@ exports.getFilesForFolder = async (req, res, next) => {
   }
 };
 
+exports.searchFiles = async (req, res, next) => {
+  console.log('searchFiles', req.query.q);
+  try {
+    const files = await FileService.searchFiles(req.user, req.query.q);
+    res.json({ files });
+  } catch (_err) {
+    next(ErrorFactory.create(_err, 'Error while searching files'));
+  }
+};
+
 exports.updateFile = async (req, res, next) => {
   console.log('updateFile', req.body);
   try {

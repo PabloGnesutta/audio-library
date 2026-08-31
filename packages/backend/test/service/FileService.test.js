@@ -100,6 +100,41 @@ describe('FileService.deleteMultipleFiles', () => {
   });
 });
 
+describe('FileService.searchFiles', () => {
+  test('returns an empty array without querying when the search term is blank', async () => {
+    const result = await FileService.searchFiles(makeUser(), '   ');
+    expect(result).toEqual([]);
+    expect(FileHelper.searchByName).not.toHaveBeenCalled();
+  });
+
+  test('maps matching files to include their folder name', async () => {
+    FileHelper.searchByName.mockResolvedValue([
+      { _id: 'f1', name: 'lecture-1.mp3', folderId: 1 },
+    ]);
+    const user = makeUser({ folders: [{ id: 1, name: 'Lectures' }] });
+
+    const result = await FileService.searchFiles(user, 'lecture');
+
+    expect(FileHelper.searchByName).toHaveBeenCalledWith(user, 'lecture');
+    expect(result).toEqual([
+      { _id: 'f1', name: 'lecture-1.mp3', folderId: 1, folderName: 'Lectures' },
+    ]);
+  });
+
+  test('leaves folderName null when the file\'s folder no longer exists', async () => {
+    FileHelper.searchByName.mockResolvedValue([
+      { _id: 'f1', name: 'orphan.mp3', folderId: 99 },
+    ]);
+    const user = makeUser({ folders: [{ id: 1, name: 'Lectures' }] });
+
+    const result = await FileService.searchFiles(user, 'orphan');
+
+    expect(result).toEqual([
+      { _id: 'f1', name: 'orphan.mp3', folderId: 99, folderName: null },
+    ]);
+  });
+});
+
 describe('FileService.addTagsToMultipleFiles', () => {
   test('merges new tags into each file\'s existing tags without duplicating', async () => {
     const fileA = makeFile({ _id: 'a', tags: ['podcast'], markModified: jest.fn(), save: jest.fn().mockResolvedValue() });

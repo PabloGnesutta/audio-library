@@ -25,6 +25,9 @@
       </div>
     </div>
 
+    <!-- FILE SEARCH -->
+    <FileSearchBox @fileSelected="goToFileSearchResult" />
+
     <!-- TAG FILTER -->
     <div v-if="allTags.length" class="tag-filter-row flex items-center">
       <span
@@ -154,6 +157,7 @@ import FolderSelect from '@/components/shared/inputs/FolderSelect';
 import FileRow from '@/components/tree/FileRow';
 import FolderRow from '@/components/tree/FolderRow';
 import SharedWithMe from '@/components/tree/SharedWithMe';
+import FileSearchBox from '@/components/tree/FileSearchBox';
 import AddFolder from '@/components/tree/popups/AddFolder';
 import MoveFiles from '@/components/tree/popups/MoveFiles';
 import TagsModal from '@/components/tree/popups/TagsModal';
@@ -177,6 +181,7 @@ export default {
     FileRow,
     FolderRow,
     SharedWithMe,
+    FileSearchBox,
     FolderSelect,
     AddFolder,
     MoveFiles,
@@ -293,6 +298,21 @@ export default {
       if (fileIndex === -1) return;
 
       this.openFileWithIndexes(treeIndex, fileIndex, result.time);
+      if (this.foldersStatus[treeIndex] !== 'DESPLEGADA') {
+        this.toggleFolder(treeIndex);
+      }
+    },
+
+    async goToFileSearchResult(result) {
+      const treeIndex = TreeHelper.treeIndexByFolderId(result.folderId);
+      if (treeIndex === -1) return;
+
+      await this.loadFolderFiles(treeIndex);
+
+      const { fileIndex } = TreeHelper.indexesByFileId(result._id);
+      if (fileIndex === -1) return;
+
+      this.openFileWithIndexes(treeIndex, fileIndex);
       if (this.foldersStatus[treeIndex] !== 'DESPLEGADA') {
         this.toggleFolder(treeIndex);
       }

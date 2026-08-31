@@ -4,6 +4,7 @@ const fileController = require('../controllers/file-controller');
 
 router.post('/:_id/url', fileController.getFileUrl);
 router.get('/folder/:folderId', fileController.getFilesForFolder);
+router.get('/search', fileController.searchFiles);
 router.post('/', fileController.postFile);
 router.put('/', fileController.updateFile); //should be /:id
 

@@ -17,6 +17,11 @@ class FileHelper {
     return File.find({ owner, folderId });
   }
 
+  static searchByName(owner, query) {
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return File.find({ owner, name: { $regex: escaped, $options: 'i' } }).sort({ name: 'asc' });
+  }
+
   static getUserFileById(owner, _id) {
     return File.findOne({ owner, _id });
   }

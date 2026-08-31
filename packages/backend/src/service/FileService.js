@@ -81,6 +81,22 @@ class FileService {
     return userFiles;
   }
 
+  static async searchFiles(user, query) {
+    const trimmed = (query || '').trim();
+    if (!trimmed) return [];
+
+    const files = await FileHelper.searchByName(user, trimmed);
+    return files.map((file) => {
+      const folder = (user.folders || []).find((f) => f.id === file.folderId);
+      return {
+        _id: file._id,
+        name: file.name,
+        folderId: file.folderId,
+        folderName: folder ? folder.name : null,
+      };
+    });
+  }
+
   static async markLastFileSeen(user, fileId, folderId) {
     try {
       const folderIndex = user.folders.findIndex(c => c.id == folderId);
