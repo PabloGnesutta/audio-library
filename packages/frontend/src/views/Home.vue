@@ -18,6 +18,21 @@
             v-slot:main
             v-drop-files="{ folder: currentFolder }"
           >
+            <div v-if="recentFiles.length" class="recently-played-wraper m-auto">
+              <h4 class="recently-played-title">Continue listening</h4>
+              <div class="recently-played-list flex">
+                <div
+                  v-for="entry in recentFiles"
+                  :key="entry.file._id"
+                  class="recently-played-item pointer"
+                  :class="{ completed: entry.file.completed }"
+                  @click="openRecentFile(entry)"
+                >
+                  <span class="name">{{ entry.file.name }}</span>
+                </div>
+              </div>
+            </div>
+
             <!-- <div v-if="!loading" class="audio-player-wraper m-auto"> -->
             <div v-if="currentFile" class="audio-player-wraper m-auto">
               <p class="reproduciendo text-center mb-2">
@@ -108,6 +123,19 @@ export default {
       currentFolder: 'tree/currentFolder',
       filesToUpload: 'fileUpload/filesToUpload',
     }),
+
+    recentFiles() {
+      const entries = [];
+      this.arbol.forEach((item, treeIndex) => {
+        item.files.forEach((file, fileIndex) => {
+          if (file.lastInteraction) entries.push({ file, treeIndex, fileIndex });
+        });
+      });
+      entries.sort(
+        (a, b) => new Date(b.file.lastInteraction) - new Date(a.file.lastInteraction)
+      );
+      return entries.slice(0, 8);
+    },
   },
 
   mounted() {
@@ -283,6 +311,10 @@ export default {
     hideSidebar() {
       this.$refs.sidebarAndMain.toggleSidebar();
     },
+
+    openRecentFile({ treeIndex, fileIndex }) {
+      this.$refs.treeNavigation.openFileWithIndexes(treeIndex, fileIndex);
+    },
   },
 };
 </script>
@@ -304,6 +336,47 @@ export default {
 .audio-player-wraper {
   padding-top: 4rem;
   max-width: 600px;
+}
+
+.recently-played-wraper {
+  padding-top: 4rem;
+  max-width: 600px;
+
+  .recently-played-title {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    color: #a8a8a8;
+  }
+
+  .recently-played-list {
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .recently-played-item {
+    flex-shrink: 0;
+    max-width: 220px;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    background-color: #222;
+    white-space: nowrap;
+
+    .name {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      background-color: #333;
+      color: var(--color-2);
+    }
+
+    &.completed {
+      opacity: 0.6;
+    }
+  }
 }
 
 .bookmarks-wrapper {

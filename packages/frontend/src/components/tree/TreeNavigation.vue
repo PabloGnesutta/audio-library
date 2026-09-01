@@ -54,6 +54,7 @@
           :unfolded="foldersStatus[treeIndex] === 'DESPLEGADA'"
           :folder="item.folder"
           :files="item.files"
+          :loaded="item.loaded"
           :treeIndex="treeIndex"
           :selected="currentFolder.id === item.folder.id"
           @onFolderClick="toggleFolder(treeIndex)"
@@ -220,6 +221,7 @@ export default {
 
   mounted() {
     this.initialize(true);
+    this.loadAllFolderFiles();
   },
 
   methods: {
@@ -269,6 +271,13 @@ export default {
       } catch (_err) {
         this.toastError(_err);
       }
+    },
+
+    // Folder files normally load lazily on expand -- fetch every folder's
+    // files up front too so the completion badge and "recently played"
+    // row have data before the user opens anything.
+    loadAllFolderFiles() {
+      this._tree.forEach((_item, treeIndex) => this.loadFolderFiles(treeIndex));
     },
 
     async toggleFolder(i) {

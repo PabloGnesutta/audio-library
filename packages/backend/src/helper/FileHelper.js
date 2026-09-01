@@ -29,6 +29,10 @@ class FileHelper {
   static saveFile(file) {
     return file.save();
   }
+
+  static touchInteraction(fileId) {
+    return File.updateOne({ _id: fileId }, { lastInteraction: new Date() });
+  }
 }
 
 module.exports = FileHelper;

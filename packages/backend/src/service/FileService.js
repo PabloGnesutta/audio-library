@@ -109,6 +109,7 @@ class FileService {
       user.lastFolderSeen = folderId;
       user.markModified("folders");
       await user.save();
+      await FileHelper.touchInteraction(fileId);
     } catch (_err) {
       // Fire-and-forget bookkeeping from the caller's perspective -- a
       // failure here (e.g. a VersionError from a racing concurrent save)

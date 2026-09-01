@@ -10,6 +10,9 @@
         <FolderOpenIcon v-if="unfolded" width="24" />
         <FolderIcon v-else width="24" />
         <span class="folder-name select-none"> {{ folder.name }} </span>
+        <span v-if="loaded && totalCount" class="folder-completion select-none">
+          {{ completedCount }}/{{ totalCount }}
+        </span>
       </div>
 
       <!-- right -->
@@ -52,7 +55,16 @@ export default {
       deleting: false,
     };
   },
-  props: ['folder', 'files', 'treeIndex', 'selected', 'unfolded'],
+  props: ['folder', 'files', 'treeIndex', 'selected', 'unfolded', 'loaded'],
+
+  computed: {
+    completedCount() {
+      return this.files.filter((file) => file.completed).length;
+    },
+    totalCount() {
+      return this.files.length;
+    },
+  },
 
   methods: {
     ...mapMutations({
@@ -117,8 +129,23 @@ export default {
 
   .left {
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     text-overflow: ellipsis;
     overflow: hidden;
+
+    .folder-name {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .folder-completion {
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      color: #a8a8a8;
+    }
   }
 
   .right {

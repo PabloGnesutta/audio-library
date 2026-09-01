@@ -1,5 +1,10 @@
 TOP PRIORITY:
 
+Make bookmarks not only have a label, but also a text area to fill, so one can take notes, and expand beyond a simple label. That text should be searchable along the label, so when a user searches bookmarks, it searches by label and also by content.
+
+Follow-up of the above is to wire the speech recognition API for the note taking. One can take the scaffolding from the fridge-track repository, which lives in the same parent directory as this.
+
+
 Sort by name/duration in each folder (preserved per device?) Should sort be done on frontend or backend?
 
 
