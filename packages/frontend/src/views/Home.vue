@@ -89,6 +89,7 @@ import TreeNavigation from '@/components/tree/TreeNavigation.vue';
 import AudioPlayer from '@/components/audio-player/AudioPlayer.vue';
 import BookmarkNavigation from '@/components/bookmarks/BookmarkNavigation';
 import FileUpload from '@/components/shared/inputs/FileUpload';
+import { getPlayOnSelectEnabled } from '@/helpers/preferences';
 
 export default {
   name: 'Home',
@@ -267,8 +268,11 @@ export default {
         });
       }
 
-      const autoplay = this.autoplayNextFile;
+      const playOnSelect = getPlayOnSelectEnabled();
+      const autoplay = this.autoplayNextFile || playOnSelect;
       this.autoplayNextFile = false;
+      if (playOnSelect) this.$refs.sidebarAndMain.closeSidebar();
+
       this.getFileUrlAndBookmarks(this.currentFile, autoplay);
     },
 
@@ -280,7 +284,11 @@ export default {
       this.currentTreeIndex = null;
       this.currentFileIndex = null;
       this.currentFileIsShared = true;
-      this.getFileUrlAndBookmarks(this.currentFile, false);
+
+      const playOnSelect = getPlayOnSelectEnabled();
+      if (playOnSelect) this.$refs.sidebarAndMain.closeSidebar();
+
+      this.getFileUrlAndBookmarks(this.currentFile, playOnSelect);
     },
 
     selectPrevious() {

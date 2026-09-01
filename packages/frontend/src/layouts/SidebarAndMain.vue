@@ -43,6 +43,10 @@ export default {
     toggleSidebar() {
       this.sidebarVisible = !this.sidebarVisible;
     },
+
+    closeSidebar() {
+      this.sidebarVisible = false;
+    },
   },
 };
 </script>

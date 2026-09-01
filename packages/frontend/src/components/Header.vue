@@ -24,6 +24,14 @@
             @change="onToggleAutoplay"
           />
         </label>
+        <label class="dropdown-toggle">
+          <span>Play on select</span>
+          <input
+            type="checkbox"
+            v-model="playOnSelectEnabled"
+            @change="onTogglePlayOnSelect"
+          />
+        </label>
         <div class="user-email">{{ user.email }}</div>
       </div>
     </header>
@@ -38,7 +46,12 @@
 <script>
 import { mapMutations } from "vuex";
 import BarsIcon from "@/components/shared/svg/BarsIcon.vue";
-import { getAutoplayEnabled, setAutoplayEnabled } from "@/helpers/preferences";
+import {
+  getAutoplayEnabled,
+  setAutoplayEnabled,
+  getPlayOnSelectEnabled,
+  setPlayOnSelectEnabled,
+} from "@/helpers/preferences";
 export default {
   name: "Header",
   components: { BarsIcon },
@@ -46,6 +59,7 @@ export default {
     return {
       menuAbierto: false,
       autoplayEnabled: getAutoplayEnabled(),
+      playOnSelectEnabled: getPlayOnSelectEnabled(),
     };
   },
 
@@ -76,6 +90,10 @@ export default {
 
     onToggleAutoplay() {
       setAutoplayEnabled(this.autoplayEnabled);
+    },
+
+    onTogglePlayOnSelect() {
+      setPlayOnSelectEnabled(this.playOnSelectEnabled);
     },
   },
 };
