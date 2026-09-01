@@ -24,12 +24,32 @@
         <!-- left -->
         <div class="left" @click="goToBookmark(bookmark)">
           <div v-if="!bookmakrsBeignEdited[b]">
-            <span> {{ toHHMMSS(bookmark.time) }} | </span>
-            <span>{{ bookmark.label }}</span>
+            <div>
+              <span> {{ toHHMMSS(bookmark.time) }} | </span>
+              <span>{{ bookmark.label }}</span>
+            </div>
+            <div v-if="bookmark.content" class="bookmark-content select-none">
+              {{ bookmark.content }}
+            </div>
           </div>
           <div v-else>
             <form class="edit-bookmark-form">
               <input :ref="'label_' + b" v-model="editableLabel" type="text" />
+              <div class="content-input-row">
+                <textarea
+                  v-model="editableContent"
+                  rows="3"
+                  placeholder="Take a note..."
+                />
+                <span
+                  v-if="speechSupported"
+                  class="icon mic pointer"
+                  :class="{ listening }"
+                  @click.prevent="toggleListening"
+                >
+                  <MicrophoneIcon width="16" />
+                </span>
+              </div>
               <button @click.prevent="confirmEdit(b)" hidden></button>
             </form>
           </div>
@@ -71,6 +91,7 @@ import { mapGetters, mapMutations } from 'vuex';
 import ErrorMixin from '@/plugins/error-mixin';
 import eventBus from '@/plugins/event-bus';
 import Helpers from '@/helpers/helper-functions';
+import SpeechRecognitionHelper from '@/helpers/SpeechRecognitionHelper';
 import BookmarkController from '@/controller/bookmark-controller';
 
 import AddBookmarkModal from '@/components/bookmarks/AddBookmarkModal';
@@ -80,6 +101,7 @@ import CheckIcon from '@/components/shared/svg/CheckIcon';
 import CancelIcon from '@/components/shared/svg/CancelIcon';
 import AddBookmarkIcon from '@/components/shared/svg/AddBookmarkIcon.vue';
 import RemoveBookmarkIcon from '@/components/shared/svg/RemoveBookmarkIcon';
+import MicrophoneIcon from '@/components/shared/svg/MicrophoneIcon';
 
 export default {
   name: 'BookmarkNavigation',
@@ -92,6 +114,7 @@ export default {
     CancelIcon,
     AddBookmarkIcon,
     RemoveBookmarkIcon,
+    MicrophoneIcon,
   },
   props: {
     bookmarks: { type: Array, default: null },
@@ -101,8 +124,12 @@ export default {
     return {
       editing: false,
       editableLabel: '',
+      editableContent: '',
       bookmakrsBeignEdited: [],
       showAddBookmarkModal: false,
+      listening: false,
+      speechSupported: SpeechRecognitionHelper.isSupported(),
+      recognitionHandle: null,
     };
   },
   computed: {
@@ -114,6 +141,10 @@ export default {
     this.bookmakrsBeignEdited = this.bookmarks.map((b) => {
       return false;
     });
+  },
+
+  beforeUnmount() {
+    this.recognitionHandle?.stop();
   },
 
   methods: {
@@ -161,6 +192,7 @@ export default {
       this.setAvoidKeyListeners(true);
 
       this.editableLabel = this.bookmarks[index].label;
+      this.editableContent = this.bookmarks[index].content || '';
       this.bookmakrsBeignEdited[index] = true;
 
       this.editing = true;
@@ -176,7 +208,7 @@ export default {
       try {
         const { data } = await BookmarkController.updateBookmark(
           this.bookmarks[index]._id,
-          { label: this.editableLabel }
+          { label: this.editableLabel, content: this.editableContent }
         );
         this.$emit('bookmarkUpdated', { index, data });
       } catch (_err) {
@@ -187,9 +219,34 @@ export default {
     },
 
     stopEdit(index) {
+      this.recognitionHandle?.stop();
       this.editing = false;
       this.bookmakrsBeignEdited[index] = false;
       this.setAvoidKeyListeners(false);
+    },
+
+    toggleListening() {
+      if (this.listening) {
+        this.recognitionHandle?.stop();
+        return;
+      }
+      this.recognitionHandle = SpeechRecognitionHelper.listenOnce({
+        onResult: (transcript) => {
+          this.editableContent = this.editableContent
+            ? `${this.editableContent} ${transcript}`
+            : transcript;
+        },
+        onError: (error) => {
+          if (error !== 'aborted' && error !== 'no-speech') {
+            this.toastError({ message: 'Speech recognition error: ' + error });
+          }
+        },
+        onEnd: () => {
+          this.listening = false;
+          this.recognitionHandle = null;
+        },
+      });
+      this.listening = !!this.recognitionHandle;
     },
 
     closeAddBookmarkModal() {
@@ -244,6 +301,44 @@ export default {
     cursor: pointer;
     &:hover {
       color: var(--color-2);
+    }
+
+    .bookmark-content {
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      opacity: 0.7;
+      white-space: pre-wrap;
+    }
+
+    .edit-bookmark-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .content-input-row {
+        position: relative;
+
+        textarea {
+          width: 100%;
+          font-family: inherit;
+          font-size: 0.9rem;
+          resize: vertical;
+          padding-right: 2.25rem;
+        }
+
+        .icon.mic {
+          position: absolute;
+          right: 0.4rem;
+          bottom: 0.4rem;
+          padding: 0.2rem;
+          &:hover {
+            color: var(--color-2);
+          }
+          &.listening {
+            color: var(--color-1);
+          }
+        }
+      }
     }
   }
 

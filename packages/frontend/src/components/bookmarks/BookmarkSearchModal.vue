@@ -10,7 +10,7 @@
         ref="search-input"
         v-model="query"
         type="text"
-        placeholder="Search bookmark labels..."
+        placeholder="Search bookmark labels and notes..."
         @input="onQueryChange"
       />
 
@@ -29,6 +29,9 @@
           @click="selectResult(result)"
         >
           <div class="result-label">{{ result.label }}</div>
+          <div v-if="result.content" class="result-content select-none">
+            {{ result.content }}
+          </div>
           <div class="result-meta select-none">
             {{ result.folderName }} / {{ result.fileName }} ·
             {{ toHHMMSS(result.time) }}
@@ -140,6 +143,15 @@ input {
 
 .result-label {
   font-weight: bold;
+}
+
+.result-content {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 0.15rem;
 }
 
 .result-meta {

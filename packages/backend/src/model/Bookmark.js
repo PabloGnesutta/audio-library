@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const BookmarkSchema = new Schema({
   label: String,
+  content: String,
   time: Number,
   owner: {
     type: Schema.Types.ObjectId,
@@ -19,6 +20,7 @@ BookmarkSchema.methods.publicData = function () {
     _id: this._id,
     time: this.time,
     label: this.label,
+    content: this.content,
     fileId: this.file._id
   };
 };

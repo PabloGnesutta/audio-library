@@ -10,12 +10,18 @@ class BookmarkHelper {
   }
 
   static userBookmarksByFileId(owner, file) {
-    return Bookmark.find({ owner, file }, '_id time label file').sort({ time: 'asc' });
+    return Bookmark.find({ owner, file }, '_id time label content file').sort({ time: 'asc' });
   }
 
+  // Matches label or content -- name kept as-is even though it now searches
+  // more than the label, to avoid an unrelated rename churning the diff.
   static searchByLabel(owner, query) {
     const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return Bookmark.find({ owner, label: { $regex: escaped, $options: 'i' } })
+    const regex = { $regex: escaped, $options: 'i' };
+    return Bookmark.find({
+      owner,
+      $or: [{ label: regex }, { content: regex }],
+    })
       .populate('file', 'name folderId')
       .sort({ label: 'asc' });
   }

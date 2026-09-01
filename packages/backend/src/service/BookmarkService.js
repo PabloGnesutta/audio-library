@@ -3,9 +3,9 @@ const BookmarkHelper = require('../helper/BookmarkHelper');
 const BusinesError = require('../exception/BusinessError');
 
 class BookmarkService {
-  static async createBookmark(user, { label, file, time }) {
+  static async createBookmark(user, { label, file, time, content }) {
     try {
-      const bookmark = await BookmarkFactory.bookmarkObject({ label, file, user, time }).save();
+      const bookmark = await BookmarkFactory.bookmarkObject({ label, content, file, user, time }).save();
       if (!bookmark) {
         throw new BusinesError('Couldnt create bookmark');
       }
@@ -64,6 +64,7 @@ class BookmarkService {
           _id: bookmark._id,
           time: bookmark.time,
           label: bookmark.label,
+          content: bookmark.content,
           fileId: bookmark.file._id,
           fileName: bookmark.file.name,
           folderId: bookmark.file.folderId,

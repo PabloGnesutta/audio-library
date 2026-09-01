@@ -24,14 +24,14 @@ describe('BookmarkService.searchBookmarks', () => {
 
   test('maps matching bookmarks to include file name and folder name', async () => {
     BookmarkHelper.searchByLabel.mockResolvedValue([
-      { _id: 'b1', time: 42, label: 'important part', file: { _id: 'f1', name: 'ep1.mp3', folderId: 1 } },
+      { _id: 'b1', time: 42, label: 'important part', content: 'remember this', file: { _id: 'f1', name: 'ep1.mp3', folderId: 1 } },
     ]);
 
     const result = await BookmarkService.searchBookmarks(makeUser(), 'important');
 
     expect(BookmarkHelper.searchByLabel).toHaveBeenCalledWith(expect.any(Object), 'important');
     expect(result).toEqual([
-      { _id: 'b1', time: 42, label: 'important part', fileId: 'f1', fileName: 'ep1.mp3', folderId: 1, folderName: 'Podcasts' },
+      { _id: 'b1', time: 42, label: 'important part', content: 'remember this', fileId: 'f1', fileName: 'ep1.mp3', folderId: 1, folderName: 'Podcasts' },
     ]);
   });
 
