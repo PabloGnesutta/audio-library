@@ -1,5 +1,5 @@
 const gb = 1000000000;
-const maxFileSize = 0.5 * gb;
+const maxFileSize = 1.5 * gb;
 const cofig = {
   maxFileSize,
   maxFileSizeStr: (maxFileSize / gb) + "Gb",
