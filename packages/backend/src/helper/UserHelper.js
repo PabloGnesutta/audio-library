@@ -59,6 +59,7 @@ class UserHelper {
   }
 
   static getUserByEmail(email, options = {}) {
+    if (typeof email !== 'string') return null;
     options.email = email;
     return User.findOne(options);
   }
@@ -71,6 +72,7 @@ class UserHelper {
   }
 
   static getUserByToken(token) {
+    if (typeof token !== 'string') return null;
     // TODO: if implement expiration, make sure the user can re-register
     // return User.findOne({ emailToken: token, emailTokenExpiration: { $gt: Date.now() } });
     return User.findOne({ emailToken: token });

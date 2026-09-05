@@ -5,8 +5,12 @@ class BookmarkHelper {
     return Bookmark.findOneAndDelete({ owner, _id });
   }
 
-  static findOneAndUpdate(owner, _id, params) {
-    return Bookmark.findOneAndUpdate({ owner, _id }, params, { new: true });
+  static findOneAndUpdate(owner, _id, { label, content, time }) {
+    const update = {};
+    if (label !== undefined) update.label = label;
+    if (content !== undefined) update.content = content;
+    if (time !== undefined) update.time = time;
+    return Bookmark.findOneAndUpdate({ owner, _id }, update, { new: true });
   }
 
   static userBookmarksByFileId(owner, file) {

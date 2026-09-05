@@ -5,6 +5,7 @@ const S3Helper = require('../helper/S3Helper');
 const ShareHelper = require('../helper/ShareHelper');
 const BusinesError = require('../exception/BusinessError');
 
+const EDITABLE_FILE_PARAMS = new Set(['folderId', 'tags', 'completed']);
 
 class FileService {
   static async getFileUrl(user, fileId) {
@@ -37,6 +38,10 @@ class FileService {
   }
 
   static async confirmUpload(user, { key, folderId, duration, fileName, fileType, fileSize }) {
+    if (typeof key !== 'string' || !key.startsWith(`audio-library/${user.email}/`)) {
+      throw new BusinesError('Invalid upload key');
+    }
+
     const savedFile = await FileHelper.saveFile(
       FileFactory.fileObject({ name: fileName, type: fileType, size: fileSize, key, user, folderId, duration })
     );
@@ -129,6 +134,8 @@ class FileService {
   }
 
   static async updateFile(user, { _id, param, value }) {
+    if (!EDITABLE_FILE_PARAMS.has(param)) throw new BusinesError('Invalid field');
+
     const file = await FileHelper.getUserFileById(user, _id);
     if (!file) throw new BusinesError("Couldn't find user file");
     file[param] = value;
@@ -140,6 +147,8 @@ class FileService {
   }
 
   static async updateMultipleFiles(user, { fileIdsList, param, value }) {
+    if (!EDITABLE_FILE_PARAMS.has(param)) throw new BusinesError('Invalid field');
+
     for (const _id of fileIdsList) {
       const file = await FileHelper.getUserFileById(user, _id);
       if (!file) throw new BusinesError("Couldn't find user file");
