@@ -8,6 +8,10 @@ class AuthHelper {
     const password = await bcrypt.compare(raw, hashed);
     return password;
   }
+
+  static hashPassword(raw) {
+    return bcrypt.hash(raw, 12);
+  }
   static async validateEmail(email) {
     if (!this.isValidEmailFormat(email)) return 'Invalid email';
     const user = await UserHelper.getUserByEmail(email);

@@ -6,4 +6,6 @@ router.post('/folder', UserController.createFolder);
 router.put('/folder', UserController.renameFolder);
 router.delete('/folder/:id', UserController.deleteFolder);
 
+router.put('/password', UserController.changePassword);
+
 module.exports = router;

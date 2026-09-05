@@ -12,6 +12,10 @@ class UserController extends BaseController {
   static renameFolder(id, newName) {
     return this.put(`/user/folder`, { id, newName });
   }
+
+  static changePassword(currentPassword, newPassword) {
+    return this.put(`/user/password`, { currentPassword, newPassword });
+  }
 }
 
 export default UserController;

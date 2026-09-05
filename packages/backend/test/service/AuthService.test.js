@@ -86,3 +86,37 @@ describe('AuthService.login', () => {
     expect(result).toMatchObject({ accessToken: 'access-token', refreshToken: 'refresh-token' });
   });
 });
+
+describe('AuthService.changePassword', () => {
+  test('rejects with a BusinessError when the current password is wrong', async () => {
+    AuthHelper.verifyPassword.mockResolvedValue(false);
+    const user = { password: 'hashed' };
+
+    await expect(AuthService.changePassword(user, 'wrong', 'newpassword1'))
+      .rejects.toBeInstanceOf(BusinessError);
+    expect(UserHelper.saveUser).not.toHaveBeenCalled();
+  });
+
+  test('rejects with a BusinessError when the new password is too short', async () => {
+    AuthHelper.verifyPassword.mockResolvedValue(true);
+    const user = { password: 'hashed' };
+
+    await expect(AuthService.changePassword(user, 'correct', 'short'))
+      .rejects.toBeInstanceOf(BusinessError);
+    expect(UserHelper.saveUser).not.toHaveBeenCalled();
+  });
+
+  test('hashes and saves the new password on success', async () => {
+    AuthHelper.verifyPassword.mockResolvedValue(true);
+    AuthHelper.hashPassword.mockResolvedValue('new-hashed-password');
+    const user = { password: 'old-hashed-password' };
+    UserHelper.saveUser.mockResolvedValue(user);
+
+    const result = await AuthService.changePassword(user, 'correct', 'newpassword1');
+
+    expect(AuthHelper.hashPassword).toHaveBeenCalledWith('newpassword1');
+    expect(user.password).toBe('new-hashed-password');
+    expect(UserHelper.saveUser).toHaveBeenCalledWith(user);
+    expect(result).toEqual({ success: true });
+  });
+});

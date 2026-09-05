@@ -1,4 +1,5 @@
 const UserService = require("../service/UserService");
+const AuthService = require("../service/AuthService");
 const ErrorFactory = require('../factory/ErrorFactory');
 
 exports.createFolder = async (req, res, next) => {
@@ -18,6 +19,17 @@ exports.deleteFolder = async (req, res, next) => {
     res.json({ folderId: req.params.id });
   } catch (err) {
     next(ErrorFactory.create(err, 'Error while deleting folder'));
+  }
+};
+
+exports.changePassword = async (req, res, next) => {
+  console.log('changePassword', req.user.email);
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const result = await AuthService.changePassword(req.user, currentPassword, newPassword);
+    res.json(result);
+  } catch (err) {
+    next(ErrorFactory.create(err, 'Error while changing password'));
   }
 };
 

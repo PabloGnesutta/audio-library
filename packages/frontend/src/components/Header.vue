@@ -15,6 +15,7 @@
       </div>
       <!-- Menú Hamburguesa -->
       <div class="dropdown-menu" :class="{ desplegado: menuAbierto }">
+        <div class="dropdown-item" @click="abrirCambiarPassword">Change password</div>
         <div class="dropdown-item" @click="cerrarSesion">Logout</div>
         <label class="dropdown-toggle">
           <span>Autoplay next</span>
@@ -40,12 +41,14 @@
       class="header-backdrop"
       @click.self="cerrarMenues"
     ></div>
+    <ChangePasswordModal ref="changePasswordModal" />
   </div>
 </template>
 
 <script>
 import { mapMutations } from "vuex";
 import BarsIcon from "@/components/shared/svg/BarsIcon.vue";
+import ChangePasswordModal from "@/components/ChangePasswordModal.vue";
 import {
   getAutoplayEnabled,
   setAutoplayEnabled,
@@ -54,7 +57,7 @@ import {
 } from "@/helpers/preferences";
 export default {
   name: "Header",
-  components: { BarsIcon },
+  components: { BarsIcon, ChangePasswordModal },
   data() {
     return {
       menuAbierto: false,
@@ -86,6 +89,11 @@ export default {
 
     cerrarMenues() {
       this.menuAbierto = false;
+    },
+
+    abrirCambiarPassword() {
+      this.cerrarMenues();
+      this.$refs.changePasswordModal.promptChangePassword();
     },
 
     onToggleAutoplay() {

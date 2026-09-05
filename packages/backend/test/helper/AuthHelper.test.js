@@ -28,6 +28,14 @@ describe('AuthHelper.verifyPassword', () => {
   });
 });
 
+describe('AuthHelper.hashPassword', () => {
+  test('produces a hash that verifyPassword confirms matches the raw password', async () => {
+    const hash = await AuthHelper.hashPassword('correct-password');
+    await expect(AuthHelper.verifyPassword('correct-password', hash)).resolves.toBe(true);
+    await expect(AuthHelper.verifyPassword('wrong-password', hash)).resolves.toBe(false);
+  });
+});
+
 describe('token sign/verify roundtrip', () => {
   test('createAccessToken produces a token validateToken can decode', async () => {
     const token = AuthHelper.createAccessToken({ userId: 'abc123' }, '1h');

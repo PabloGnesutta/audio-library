@@ -1,4 +1,4 @@
-const gb = 1000000000;
+const gb =  1_073_741_824;
 const maxFileSize = 1.5 * gb;
 const cofig = {
   maxFileSize,
